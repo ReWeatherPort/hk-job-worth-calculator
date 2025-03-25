@@ -1,3 +1,61 @@
+// 香港市場平均年薪數據（根據學業水準同工作經驗，單位：HKD）
+const marketSalaries = {
+    1: { // 大專
+        0: 180000, // 0-2 年經驗
+        3: 240000, // 3-5 年
+        6: 300000, // 6-10 年
+        11: 360000  // 11+ 年
+    },
+    2: { // 大學生
+        0: 240000,
+        3: 300000,
+        6: 420000,
+        11: 540000
+    },
+    3: { // 碩士
+        0: 300000,
+        3: 420000,
+        6: 600000,
+        11: 780000
+    },
+    4: { // 博士
+        0: 360000,
+        3: 540000,
+        6: 780000,
+        11: 960000
+    }
+};
+
+// 工作環境同同事環境嘅文字映射
+const workEnvText = {
+    5: "甲級寫字樓",
+    4: "普通商業大樓/在家工作",
+    3: "工業大廈",
+    2: "工廠"
+};
+
+const colleagueEnvText = {
+    1: "全部都係PK",
+    2: "好多 Free Rider",
+    3: "萍水相逢",
+    4: "開心工作",
+    5: "Friend 過夾band"
+};
+
+const educationText = {
+    1: "大專",
+    2: "大學生",
+    3: "碩士",
+    4: "博士"
+};
+
+const uniTypeText = {
+    1: "大專",
+    2: "私大（樹仁/恒大）",
+    3: "八大",
+    4: "海歸（外國升學）"
+};
+
 function calculateWorth() {
     // 獲取所有輸入值
     const monthlySalary = parseFloat(document.getElementById('monthlySalary').value);
@@ -12,6 +70,12 @@ function calculateWorth() {
     const educationScore = parseFloat(document.getElementById('education').value);
     const experience = parseFloat(document.getElementById('experience').value);
     const uniTypeScore = parseFloat(document.getElementById('uniType').value);
+
+    // 輸入驗證
+    if (!monthlySalary || monthlySalary <= 0) {
+        document.getElementById('result').innerText = '請輸入有效嘅稅前月薪！';
+        return;
+    }
 
     // 計算年薪
     const annualSalary = monthlySalary * 12;
@@ -53,6 +117,86 @@ function calculateWorth() {
     }
 
     document.getElementById('result').innerText = `你的工作性價比：${worth.toFixed(2)} - ${resultText}`;
+
+    // 生成報告
+    generateReport({
+        monthlySalary,
+        annualSalary,
+        workDaysPerWeek,
+        wfhDaysPerWeek,
+        hoursPerDay,
+        commute,
+        transportCost,
+        annualLeave,
+        workEnvScore,
+        colleagueEnvScore,
+        educationScore,
+        experience,
+        uniTypeScore,
+        worth,
+        resultText
+    });
+}
+
+function generateReport(data) {
+    const {
+        monthlySalary,
+        annualSalary,
+        workDaysPerWeek,
+        wfhDaysPerWeek,
+        hoursPerDay,
+        commute,
+        transportCost,
+        annualLeave,
+        workEnvScore,
+        colleagueEnvScore,
+        educationScore,
+        experience,
+        uniTypeScore,
+        worth,
+        resultText
+    } = data;
+
+    // 計算市場平均薪酬
+    let experienceRange;
+    if (experience <= 2) experienceRange = 0;
+    else if (experience <= 5) experienceRange = 3;
+    else if (experience <= 10) experienceRange = 6;
+    else experienceRange = 11;
+
+    const marketSalary = marketSalaries[educationScore][experienceRange];
+    const salaryComparison = annualSalary - marketSalary;
+    const comparisonText = salaryComparison > 0 
+        ? `高於市場平均 ${Math.abs(salaryComparison).toLocaleString()} HKD`
+        : salaryComparison < 0 
+        ? `低於市場平均 ${Math.abs(salaryComparison).toLocaleString()} HKD`
+        : "等於市場平均";
+
+    // 生成報告內容
+    const report = `
+        <h2>你的工作報告</h2>
+        <h3>你的選擇</h3>
+        <p>稅前月薪：${monthlySalary.toLocaleString()} HKD</p>
+        <p>稅前年薪：${annualSalary.toLocaleString()} HKD</p>
+        <p>每週工作天數：${workDaysPerWeek} 天</p>
+        <p>每週在家工作天數：${wfhDaysPerWeek} 天</p>
+        <p>每日工作時數：${hoursPerDay} 小時</p>
+        <p>單程通勤時間：${commute} 小時</p>
+        <p>每日車費：${transportCost} HKD</p>
+        <p>年假日數：${annualLeave} 天</p>
+        <p>工作環境：${workEnvText[workEnvScore]}</p>
+        <p>同事環境：${colleagueEnvText[colleagueEnvScore]}</p>
+        <p>學業水準：${educationText[educationScore]}</p>
+        <p>工作經驗：${experience} 年</p>
+        <p>大學類型：${uniTypeText[uniTypeScore]}</p>
+        <h3>工作分析</h3>
+        <p>你的工作性價比：${worth.toFixed(2)} - ${resultText}</p>
+        <h3>市場比較</h3>
+        <p>根據你的學業水準 (${educationText[educationScore]}) 同工作經驗 (${experience} 年)，香港市場平均年薪為 ${marketSalary.toLocaleString()} HKD。</p>
+        <p>你的年薪 (${annualSalary.toLocaleString()} HKD) ${comparisonText}。</p>
+    `;
+
+    document.getElementById('report').innerHTML = report;
 }
 
 function resetForm() {
@@ -69,4 +213,5 @@ function resetForm() {
     document.getElementById('experience').value = 0;
     document.getElementById('uniType').value = 1;
     document.getElementById('result').innerText = '';
+    document.getElementById('report').innerHTML = '';
 }
