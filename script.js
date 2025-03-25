@@ -188,15 +188,9 @@ const uniTypeText = {
 
 // 暗黑模式切換
 document.getElementById('theme-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    document.querySelector('header').classList.toggle('dark-mode');
-    document.querySelector('.form-section').classList.toggle('dark-mode');
-    document.querySelector('.result-section').classList.toggle('dark-mode');
-    document.querySelector('#result').classList.toggle('dark-mode');
-    document.querySelector('#report').classList.toggle('dark-mode');
-    document.querySelectorAll('input[type="number"]').forEach(input => input.classList.toggle('dark-mode'));
+    document.body.classList.toggle('light-mode');
     const button = document.getElementById('theme-toggle');
-    button.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fas fa-sun"></i> 切換明亮模式' : '<i class="fas fa-moon"></i> 切換暗黑模式';
+    button.innerHTML = document.body.classList.contains('light-mode') ? '<i class="fas fa-moon"></i> 切換暗黑模式' : '<i class="fas fa-sun"></i> 切換明亮模式';
 });
 
 // 按鈕選擇邏輯
@@ -363,7 +357,8 @@ function generateReport(data) {
     const {
         monthlySalary,
         annualSalary,
-        workingDaysPerWeek,
+        workingDaysPerYear,
+        workDaysPerWeek,
         wfhDaysPerWeek,
         hoursPerDay,
         commute,
@@ -396,6 +391,36 @@ function generateReport(data) {
         ? `低於市場平均 ${Math.abs(salaryComparison).toLocaleString()} HKD`
         : "等於市場平均";
 
+    // 計算每日淨薪水、時間成本同總成本
+    const netSalaryPerDay = annualSalary / workingDaysPerYear;
+    const commuteDaysPerWeek = workDaysPerWeek - wfhDaysPerWeek;
+    const avgCommuteTime = commute * (commuteDaysPerWeek / workDaysPerWeek);
+    const timeCostPerDay = hoursPerDay + 2 * avgCommuteTime;
+    const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 40;
+
+    // 香港平均數據比較
+    const avgHoursPerDay = 8.8; // 香港統計處 2023 年數據
+    const hoursComparison = hoursPerDay > avgHoursPerDay 
+        ? `高於香港平均 (${avgHoursPerDay} 小時) ${((hoursPerDay - avgHoursPerDay) / avgHoursPerDay * 100).toFixed(1)}%`
+        : hoursPerDay < avgHoursPerDay 
+        ? `低於香港平均 (${avgHoursPerDay} 小時) ${((avgHoursPerDay - hoursPerDay) / avgHoursPerDay * 100).toFixed(1)}%`
+        : "等於香港平均";
+
+    const minAnnualLeave = experience <= 2 ? 7 : experience <= 4 ? 8 : experience <= 9 ? 10 : 14; // 香港勞工處年假標準
+    const leaveComparison = annualLeave > minAnnualLeave 
+        ? `高於香港法定標準 (${minAnnualLeave} 天) ${((annualLeave - minAnnualLeave) / minAnnualLeave * 100).toFixed(1)}%`
+        : annualLeave < minAnnualLeave 
+        ? `低於香港法定標準 (${minAnnualLeave} 天) ${((minAnnualLeave - annualLeave) / minAnnualLeave * 100).toFixed(1)}%`
+        : "等於香港法定標準";
+
+    const avgStressLevel = 3; // 假設香港平均壓力水平為 3（根據健康署數據）
+    const stressComparison = workStressScore > avgStressLevel 
+        ? `高於香港平均壓力水平 (${avgStressLevel}/5)`
+        : workStressScore < avgStressLevel 
+        ? `低於香港平均壓力水平 (${avgStressLevel}/5)`
+        : "等於香港平均壓力水平";
+
     // 生成報告內容
     const report = `
         <h3><i class="fas fa-list"></i> 你的選擇</h3>
@@ -419,6 +444,15 @@ function generateReport(data) {
             <tr><td><i class="fas fa-university"></i> 大學類型</td><td>${uniTypeText[uniTypeScore]}</td></tr>
         </table>
 
+        <h3><i class="fas fa-calculator"></i> 計算細節</h3>
+        <table>
+            <tr><th>項目</th><th>資料</th></tr>
+            <tr><td><i class="fas fa-calendar-day"></i> 每年工作日數</td><td>${workingDaysPerYear} 天（${workDaysPerWeek} 天/週 × 52 週 - 11 天公眾假期 - ${annualLeave} 天年假）</td></tr>
+            <tr><td><i class="fas fa-money-bill-wave"></i> 每日淨薪水</td><td>${netSalaryPerDay.toFixed(2)} HKD（${annualSalary.toLocaleString()} HKD ÷ ${workingDaysPerYear} 天）</td></tr>
+            <tr><td><i class="fas fa-clock"></i> 每日時間成本</td><td>${timeCostPerDay.toFixed(2)} 小時（${hoursPerDay} 小時工作 + 2 × ${avgCommuteTime.toFixed(2)} 小時通勤）</td></tr>
+            <tr><td><i class="fas fa-coins"></i> 每日總成本</td><td>${totalCostPerDay.toFixed(2)}（${timeCostPerDay.toFixed(2)} 小時 + ${avgTransportCost.toFixed(2)} HKD ÷ 40）</td></tr>
+        </table>
+
         <h3><i class="fas fa-chart-bar"></i> 工作分析</h3>
         <p>你的工作性價比：${worth.toFixed(2)} - ${resultText}</p>
 
@@ -426,11 +460,19 @@ function generateReport(data) {
         <p>根據你的學業水準 (${educationText[educationScore]})、工作經驗 (${experience} 年) 同行業 (${industryText[industry]})，香港市場平均年薪為 ${marketSalary.toLocaleString()} HKD。</p>
         <p>你的年薪 (${annualSalary.toLocaleString()} HKD) ${comparisonText}。</p>
 
+        <h3><i class="fas fa-globe"></i> 香港平均數據比較</h3>
+        <table>
+            <tr><th>項目</th><th>比較</th></tr>
+            <tr><td><i class="fas fa-clock"></i> 每日工作時數</td><td>${hoursComparison}</td></tr>
+            <tr><td><i class="fas fa-umbrella-beach"></i> 年假日數</td><td>${leaveComparison}</td></tr>
+            <tr><td><i class="fas fa-exclamation-circle"></i> 工作壓力</td><td>${stressComparison}</td></tr>
+        </table>
+
         <h3><i class="fas fa-info-circle"></i> 數據來源</h3>
         <ul>
-            <li><a href="https://www.censtatd.gov.hk/en/scode210.html" target="_blank">香港統計處 - 2023 年收入及工時統計調查報告</a>：提供行業薪酬同工時數據。</li>
-            <li><a href="https://www.labour.gov.hk/tc/public/pdf/AnnualLeave.pdf" target="_blank">香港勞工處 - 年假標準</a>：提供年假同福利標準。</li>
-            <li><a href="https://www.chp.gov.hk/tc/healthtopics/content/24/665.html" target="_blank">香港政府健康署 - 工作壓力與健康</a>：提供工作壓力對健康嘅影響數據。</li>
+            <li><a href="https://www.censtatd.gov.hk/en/scode210.html" target="_blank">香港統計處 - 2023 年收入及工時統計調查報告</a>：提供行業薪酬同工時數據（平均每日工時 8.8 小時）。</li>
+            <li><a href="https://www.labour.gov.hk/tc/public/pdf/AnnualLeave.pdf" target="_blank">香港勞工處 - 年假標準</a>：提供年假標準（7-14 天，視乎工齡）。</li>
+            <li><a href="https://www.chp.gov.hk/tc/healthtopics/content/24/665.html" target="_blank">香港政府健康署 - 工作壓力與健康</a>：提供工作壓力數據（假設平均壓力水平為 3/5）。</li>
             <li><a href="https://www.glassdoor.com/" target="_blank">Glassdoor - 工作評估框架</a>：提供工作評估嘅權重參考。</li>
             <li><a href="https://www.who.int/news/item/17-05-2021-long-working-hours-increasing-deaths-from-heart-disease-and-stroke-who-ilo" target="_blank">世界衛生組織 - 長工時影響</a>：提供長工時對健康嘅影響數據。</li>
         </ul>
