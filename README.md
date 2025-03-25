@@ -1,6 +1,7 @@
 # 社蓄的自我評價 (HK Job Worth Calculator)
 
-![Dark Mode Screenshot](https://via.placeholder.com/800x400.png?text=Dark+Mode+Screenshot)  
+![image](https://github.com/user-attachments/assets/8da3ebc2-47a8-44a2-ab05-51241755d9d7)
+
 *應用程式喺暗黑模式下嘅截圖（可稍後替換為真實截圖）*
 
 ## 項目概述
