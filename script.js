@@ -129,29 +129,39 @@ function calculateWorth() {
 
     // 計算每日總成本（包括車費）
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 100; // 假設每小時成本 100 HKD（增加成本影響）
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50; // 假設每小時成本 50 HKD（增加車費影響）
 
     // 計算基礎得分（以每日淨薪水除以總成本為基礎）
-    let worth = (netSalaryPerDay / totalCostPerDay) * 10; // 乘以 10 作為基礎得分
+    let worth = (netSalaryPerDay / totalCostPerDay) * 2; // 乘以 2 作為基礎得分（降低基礎得分影響）
 
-    // 考慮工作環境同同事環境（作為乘數，範圍 0.36 至 1）
-    const envMultiplier = (workEnvScore * colleagueEnvScore) / 25; // 最大值 5*5=25，範圍 0.36 至 1
+    // 考慮工作環境同同事環境（作為乘數，範圍 0.04 至 1）
+    const envMultiplier = (workEnvScore * colleagueEnvScore) / 25; // 最大值 5*5=25，範圍 0.04 至 1
     worth = worth * envMultiplier;
 
     // 考慮年假（年假越多，得分越高）
     const leaveBonus = annualLeave / 14; // 假設 14 天係標準，範圍 0 至 2（假設最多 28 天）
-    worth = worth * (1 + leaveBonus * 0.2); // 年假加成最多 0.4
+    worth = worth * (1 + leaveBonus * 0.1); // 年假加成最多 0.2（降低加成影響）
 
-    // 考慮學業水準、大學類型同工作經驗嘅加成（每項最多加 0.1）
-    const educationBonus = educationScore * 0.025; // 每級加 0.025，最大 0.1
-    const uniTypeBonus = uniTypeScore * 0.025; // 每級加 0.025，最大 0.1
-    const experienceBonus = Math.min(experience * 0.01, 0.1); // 每一年加 0.01，最大 0.1
+    // 考慮學業水準、大學類型同工作經驗嘅加成（每項最多加 0.05）
+    const educationBonus = educationScore * 0.0125; // 每級加 0.0125，最大 0.05
+    const uniTypeBonus = uniTypeScore * 0.0125; // 每級加 0.0125，最大 0.05
+    const experienceBonus = Math.min(experience * 0.005, 0.05); // 每一年加 0.005，最大 0.05
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
+
+    // 考慮薪水同市場平均嘅比較
+    let experienceRange;
+    if (experience <= 2) experienceRange = 0;
+    else if (experience <= 5) experienceRange = 3;
+    else if (experience <= 10) experienceRange = 6;
+    else experienceRange = 11;
+    const marketSalary = marketSalaries[educationScore][experienceRange];
+    const salaryRatio = annualSalary / marketSalary;
+    worth = worth * Math.min(salaryRatio, 1.5); // 薪水比市場平均低會降低得分，高最多加 50%
 
     // 確保得分喺 1 到 100 之間
     worth = Math.max(1, Math.min(100, worth));
 
-    // 新評級標準
+    // 評級標準
     let resultText;
     if (worth <= 20) {
         resultText = '你需要走人 (😱)';
@@ -173,6 +183,7 @@ function calculateWorth() {
     generateReport({
         monthlySalary,
         annualSalary,
+        workDaysPerYear,
         workDaysPerWeek,
         wfhDaysPerWeek,
         hoursPerDay,
@@ -193,6 +204,7 @@ function generateReport(data) {
     const {
         monthlySalary,
         annualSalary,
+        workDaysPerYear,
         workDaysPerWeek,
         wfhDaysPerWeek,
         hoursPerDay,
