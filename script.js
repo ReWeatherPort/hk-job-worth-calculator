@@ -129,27 +129,42 @@ function calculateWorth() {
 
     // 計算每日總成本（包括車費）
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50; // 假設每小時成本 50 HKD（降低成本影響）
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 100; // 假設每小時成本 100 HKD（增加成本影響）
 
-    // 計算基礎得分（調整除數，令得分更高）
-    let worth = (netSalaryPerDay / totalCostPerDay) * workEnvScore * colleagueEnvScore / 5; // 除數改為 5
+    // 計算基礎得分（以每日淨薪水除以總成本為基礎）
+    let worth = (netSalaryPerDay / totalCostPerDay) * 10; // 乘以 10 作為基礎得分
 
-    // 考慮學業水準、大學類型同工作經驗嘅加成（增加加成效果）
-    const educationBonus = educationScore * 0.15; // 每級加 0.15
-    const uniTypeBonus = uniTypeScore * 0.15; // 每級加 0.15
-    const experienceBonus = experience * 0.08; // 每一年加 0.08
+    // 考慮工作環境同同事環境（作為乘數，範圍 0.36 至 1）
+    const envMultiplier = (workEnvScore * colleagueEnvScore) / 25; // 最大值 5*5=25，範圍 0.36 至 1
+    worth = worth * envMultiplier;
+
+    // 考慮年假（年假越多，得分越高）
+    const leaveBonus = annualLeave / 14; // 假設 14 天係標準，範圍 0 至 2（假設最多 28 天）
+    worth = worth * (1 + leaveBonus * 0.2); // 年假加成最多 0.4
+
+    // 考慮學業水準、大學類型同工作經驗嘅加成（每項最多加 0.1）
+    const educationBonus = educationScore * 0.025; // 每級加 0.025，最大 0.1
+    const uniTypeBonus = uniTypeScore * 0.025; // 每級加 0.025，最大 0.1
+    const experienceBonus = Math.min(experience * 0.01, 0.1); // 每一年加 0.01，最大 0.1
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
 
-    // 調整評級範圍，令「好」更容易達到
+    // 確保得分喺 1 到 100 之間
+    worth = Math.max(1, Math.min(100, worth));
+
+    // 新評級標準
     let resultText;
-    if (worth < 1.5) {
-        resultText = '非常差 (😱)';
-    } else if (worth >= 1.5 && worth < 2.5) {
-        resultText = '一般 (😐)';
-    } else if (worth >= 2.5 && worth < 3.5) {
-        resultText = '很好 (😎)';
+    if (worth <= 20) {
+        resultText = '你需要走人 (😱)';
+    } else if (worth <= 40) {
+        resultText = '好辛苦 (😓)';
+    } else if (worth <= 60) {
+        resultText = '正常啦 (😐)';
+    } else if (worth <= 80) {
+        resultText = '幾好 (😊)';
+    } else if (worth <= 90) {
+        resultText = '好正嘅工作 (😎)';
     } else {
-        resultText = '超級好 (🤩)';
+        resultText = '你上世救宇宙 (🤩)';
     }
 
     document.getElementById('result').innerText = `你的工作性價比：${worth.toFixed(2)} - ${resultText}`;
