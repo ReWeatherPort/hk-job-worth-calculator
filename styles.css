@@ -161,6 +161,18 @@ button i {
     margin-top: 1em;
 }
 
+#report h3 {
+    color: #ddd; /* 確保標題喺暗黑模式下可見 */
+}
+
+#report p {
+    color: #ddd; /* 確保段落文字喺暗黑模式下可見 */
+}
+
+#report ul {
+    color: #ddd; /* 確保列表文字喺暗黑模式下可見 */
+}
+
 #report table {
     width: 100%;
     border-collapse: collapse;
@@ -186,6 +198,18 @@ button i {
 #report td i {
     margin-right: 0.3em;
     color: #3498db;
+}
+
+/* 報告中嘅連結樣式（暗黑模式預設） */
+#report a {
+    color: #66b0ff; /* 淺藍色，喺暗黑模式下清晰可見 */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#report a:hover {
+    color: #99cfff; /* hover 時變更淺嘅藍色 */
+    text-decoration: underline;
 }
 
 /* 明亮模式 */
@@ -228,11 +252,34 @@ body.light-mode {
     background-color: #e9ecef;
 }
 
+.light-mode #report h3 {
+    color: #2c3e50;
+}
+
+.light-mode #report p {
+    color: #333;
+}
+
+.light-mode #report ul {
+    color: #333;
+}
+
 .light-mode #report th {
     background-color: #f1f3f5;
+    color: #333;
 }
 
 .light-mode #report th, .light-mode #report td {
     border-color: #ddd;
     color: #333;
+}
+
+/* 明亮模式下嘅連結樣式 */
+.light-mode #report a {
+    color: #1a73e8; /* 深藍色，喺明亮模式下清晰可見 */
+}
+
+.light-mode #report a:hover {
+    color: #1557b0; /* hover 時變更深嘅藍色 */
+    text-decoration: underline;
 }
