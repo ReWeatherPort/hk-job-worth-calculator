@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作性價比計算器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>工作性價比計算器</h1>
+        <label for="salary">稅前年薪 (HKD):</label>
+        <input type="number" id="salary" placeholder="例如 300000"><br>
+        <label for="workDays">每週工作日數:</label>
+        <input type="number" id="workDays" value="5"><br>
+        <label for="hours">每日工作時數:</label>
+        <input type="number" id="hours" value="8"><br>
+        <label for="commute">單程通勤時間 (小時):</label>
+        <input type="number" id="commute" value="0.5" step="0.1"><br>
+        <label for="env">工作環境評分 (1-5):</label>
+        <input type="range" id="env" min="1" max="5" value="3"><br>
+        <label for="colleague">同事評分 (1-5):</label>
+        <input type="range" id="colleague" min="1" max="5" value="3"><br>
+        <button onclick="calculateWorth()">計算</button>
+        <button onclick="resetForm()">重設</button>
+        <p id="result"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
