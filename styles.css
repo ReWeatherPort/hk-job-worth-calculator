@@ -1,43 +1,159 @@
+/* 基本樣式 */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
     background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
 }
+
+/* 暗黑模式 */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* 標題區域 */
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+header.dark-mode {
+    background-color: #2c2c2c;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+header p {
+    margin: 5px 0;
+}
+header a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+header a:hover {
+    text-decoration: underline;
+}
+#theme-toggle {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+#theme-toggle:hover {
+    background-color: #45a049;
+}
+
+/* 主要容器 */
 .container {
-    max-width: 600px;
-    margin: 0 auto;
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    gap: 20px;
+}
+.form-section, .result-section {
+    flex: 1;
     padding: 20px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+.form-section.dark-mode, .result-section.dark-mode {
+    background-color: #2c2c2c;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 表單樣式 */
 label {
     display: block;
     margin: 10px 0 5px;
     font-weight: bold;
 }
-input[type="number"], select {
+input[type="number"] {
     width: 100%;
-    padding: 5px;
+    padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: #fff;
+    color: #333;
 }
-button {
+input[type="number"].dark-mode {
+    background-color: #3c3c3c;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+/* 按鈕選擇 */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.button-group button.option {
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.button-group button.option.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+.button-group button.option:hover {
+    background-color: #d0d0d0;
+}
+.button-group button.option.active:hover {
+    background-color: #45a049;
+}
+.dark-mode .button-group button.option {
+    background-color: #3c3c3c;
+    border-color: #555;
+    color: #e0e0e0;
+}
+.dark-mode .button-group button.option.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* 行動按鈕 */
+.action-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+.action-buttons button {
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 10px;
 }
-button:hover {
+.action-buttons button:hover {
     background-color: #45a049;
 }
+
+/* 結果區域 */
 #result {
     margin-top: 20px;
     font-size: 1.2em;
     color: #333;
+}
+#result.dark-mode {
+    color: #e0e0e0;
 }
 #report {
     margin-top: 20px;
@@ -45,6 +161,10 @@ button:hover {
     background-color: #f9f9f9;
     border-radius: 5px;
     border: 1px solid #ddd;
+}
+#report.dark-mode {
+    background-color: #3c3c3c;
+    border-color: #555;
 }
 #report h2 {
     font-size: 1.5em;

@@ -7,58 +7,68 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>工作性價比計算器</h1>
-        <label for="monthlySalary">稅前月薪 (HKD):</label>
-        <input type="number" id="monthlySalary" placeholder="例如 25000"><br>
-        <label for="workDays">每週工作天數:</label>
-        <input type="number" id="workDays" value="5"><br>
-        <label for="wfhDays">每週在家工作天數:</label>
-        <input type="number" id="wfhDays" value="0"><br>
-        <label for="hours">每日工作時數:</label>
-        <input type="number" id="hours" value="8"><br>
-        <label for="commute">單程通勤時間 (小時):</label>
-        <input type="number" id="commute" value="0.5" step="0.1"><br>
-        <label for="transportCost">每日車費 (HKD):</label>
-        <input type="number" id="transportCost" value="0"><br>
-        <label for="annualLeave">年假日數:</label>
-        <input type="number" id="annualLeave" value="7"><br>
-        <label for="workEnv">工作環境:</label>
-        <select id="workEnv">
-            <option value="5">甲級寫字樓</option>
-            <option value="4">普通商業大樓</option>
-            <option value="3">工業大廈</option>
-            <option value="2">工廠</option>
-            <option value="4">在家工作</option>
-        </select><br>
-        <label for="colleagueEnv">同事環境:</label>
-        <select id="colleagueEnv">
-            <option value="1">全部都係PK</option>
-            <option value="2">好多 Free Rider</option>
-            <option value="3">萍水相逢</option>
-            <option value="4">開心工作</option>
-            <option value="5">Friend 過夾band</option>
-        </select><br>
-        <label for="education">學業水準:</label>
-        <select id="education">
-            <option value="1">大專</option>
-            <option value="2">大學生</option>
-            <option value="3">碩士</option>
-            <option value="4">博士</option>
-        </select><br>
-        <label for="experience">工作經驗（年，唔計實習）:</label>
-        <input type="number" id="experience" value="0"><br>
-        <label for="uniType">大學類型:</label>
-        <select id="uniType">
-            <option value="1">大專</option>
-            <option value="2">私大（樹仁/恒大）</option>
-            <option value="3">八大</option>
-            <option value="4">海歸（外國升學）</option>
-        </select><br>
-        <button onclick="calculateWorth()">計算</button>
-        <button onclick="resetForm()">重設</button>
-        <p id="result"></p>
-        <div id="report" style="margin-top: 20px;"></div>
+        <p>由 <a href="https://github.com/ReWeatherPort" target="_blank">ReWeatherPort</a> 開發</p>
+        <button id="theme-toggle">切換暗黑模式</button>
+    </header>
+    <div class="container">
+        <div class="form-section">
+            <label>稅前月薪 (HKD):</label>
+            <input type="number" id="monthlySalary" placeholder="例如 25000"><br>
+            <label>每週工作天數:</label>
+            <input type="number" id="workDays" value="5"><br>
+            <label>每週在家工作天數:</label>
+            <input type="number" id="wfhDays" value="0"><br>
+            <label>每日工作時數:</label>
+            <input type="number" id="hours" value="8"><br>
+            <label>單程通勤時間 (小時):</label>
+            <input type="number" id="commute" value="0.5" step="0.1"><br>
+            <label>每日車費 (HKD):</label>
+            <input type="number" id="transportCost" value="0"><br>
+            <label>年假日數:</label>
+            <input type="number" id="annualLeave" value="7"><br>
+            <label>工作環境:</label>
+            <div class="button-group" id="workEnv">
+                <button type="button" class="option active" data-value="5">甲級寫字樓</button>
+                <button type="button" class="option" data-value="4">普通商業大樓</button>
+                <button type="button" class="option" data-value="3">工業大廈</button>
+                <button type="button" class="option" data-value="2">工廠</button>
+                <button type="button" class="option" data-value="4">在家工作</button>
+            </div>
+            <label>同事環境:</label>
+            <div class="button-group" id="colleagueEnv">
+                <button type="button" class="option" data-value="1">全部都係PK</button>
+                <button type="button" class="option" data-value="2">好多 Free Rider</button>
+                <button type="button" class="option active" data-value="3">萍水相逢</button>
+                <button type="button" class="option" data-value="4">開心工作</button>
+                <button type="button" class="option" data-value="5">Friend 過夾band</button>
+            </div>
+            <label>學業水準:</label>
+            <div class="button-group" id="education">
+                <button type="button" class="option active" data-value="1">大專</button>
+                <button type="button" class="option" data-value="2">大學生</button>
+                <button type="button" class="option" data-value="3">碩士</button>
+                <button type="button" class="option" data-value="4">博士</button>
+            </div>
+            <label>工作經驗（年，唔計實習）:</label>
+            <input type="number" id="experience" value="0"><br>
+            <label>大學類型:</label>
+            <div class="button-group" id="uniType">
+                <button type="button" class="option active" data-value="1">大專</button>
+                <button type="button" class="option" data-value="2">私大（樹仁/恒大）</button>
+                <button type="button" class="option" data-value="3">八大</button>
+                <button type="button" class="option" data-value="4">海歸（外國升學）</button>
+            </div>
+            <div class="action-buttons">
+                <button onclick="calculateWorth()">計算</button>
+                <button onclick="resetForm()">重設</button>
+            </div>
+        </div>
+        <div class="result-section">
+            <p id="result"></p>
+            <div id="report"></div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

@@ -56,6 +56,42 @@ const uniTypeText = {
     4: "海歸（外國升學）"
 };
 
+// 暗黑模式切換
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.querySelector('header').classList.toggle('dark-mode');
+    document.querySelector('.form-section').classList.toggle('dark-mode');
+    document.querySelector('.result-section').classList.toggle('dark-mode');
+    document.querySelector('#result').classList.toggle('dark-mode');
+    document.querySelector('#report').classList.toggle('dark-mode');
+    document.querySelectorAll('input[type="number"]').forEach(input => input.classList.toggle('dark-mode'));
+    const button = document.getElementById('theme-toggle');
+    button.textContent = document.body.classList.contains('dark-mode') ? '切換明亮模式' : '切換暗黑模式';
+});
+
+// 按鈕選擇邏輯
+function setupButtonGroup(groupId) {
+    const group = document.getElementById(groupId);
+    const buttons = group.querySelectorAll('.option');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+}
+
+setupButtonGroup('workEnv');
+setupButtonGroup('colleagueEnv');
+setupButtonGroup('education');
+setupButtonGroup('uniType');
+
+function getButtonGroupValue(groupId) {
+    const group = document.getElementById(groupId);
+    const activeButton = group.querySelector('.option.active');
+    return parseFloat(activeButton.getAttribute('data-value'));
+}
+
 function calculateWorth() {
     // 獲取所有輸入值
     const monthlySalary = parseFloat(document.getElementById('monthlySalary').value);
@@ -65,11 +101,11 @@ function calculateWorth() {
     const commute = parseFloat(document.getElementById('commute').value);
     const transportCost = parseFloat(document.getElementById('transportCost').value);
     const annualLeave = parseInt(document.getElementById('annualLeave').value);
-    const workEnvScore = parseFloat(document.getElementById('workEnv').value);
-    const colleagueEnvScore = parseFloat(document.getElementById('colleagueEnv').value);
-    const educationScore = parseFloat(document.getElementById('education').value);
+    const workEnvScore = getButtonGroupValue('workEnv');
+    const colleagueEnvScore = getButtonGroupValue('colleagueEnv');
+    const educationScore = getButtonGroupValue('education');
     const experience = parseFloat(document.getElementById('experience').value);
-    const uniTypeScore = parseFloat(document.getElementById('uniType').value);
+    const uniTypeScore = getButtonGroupValue('uniType');
 
     // 輸入驗證
     if (!monthlySalary || monthlySalary <= 0) {
@@ -207,11 +243,19 @@ function resetForm() {
     document.getElementById('commute').value = 0.5;
     document.getElementById('transportCost').value = 0;
     document.getElementById('annualLeave').value = 7;
-    document.getElementById('workEnv').value = 5;
-    document.getElementById('colleagueEnv').value = 3;
-    document.getElementById('education').value = 1;
     document.getElementById('experience').value = 0;
-    document.getElementById('uniType').value = 1;
     document.getElementById('result').innerText = '';
     document.getElementById('report').innerHTML = '';
+
+    // 重設按鈕選擇
+    ['workEnv', 'colleagueEnv', 'education', 'uniType'].forEach(groupId => {
+        const group = document.getElementById(groupId);
+        const buttons = group.querySelectorAll('.option');
+        buttons.forEach(button => {
+            button.classList.remove('active');
+            if (button.getAttribute('data-value') === (groupId === 'workEnv' ? '5' : groupId === 'colleagueEnv' ? '3' : '1')) {
+                button.classList.add('active');
+            }
+        });
+    });
 }
