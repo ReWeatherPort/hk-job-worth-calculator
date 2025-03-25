@@ -1,28 +1,28 @@
-// 香港市場平均年薪數據（根據學業水準同工作經驗，單位：HKD）
+// 香港市場平均年薪數據（根據學業水準同工作經驗，單位：HKD，基於 2023 年香港統計處數據）
 const marketSalaries = {
     1: { // 大專
-        0: 180000, // 0-2 年經驗
-        3: 240000, // 3-5 年
-        6: 300000, // 6-10 年
-        11: 360000  // 11+ 年
+        0: 180000, // 0-2 年經驗（15,000 HKD/月）
+        3: 216000, // 3-5 年（18,000 HKD/月）
+        6: 264000, // 6-10 年（22,000 HKD/月）
+        11: 312000  // 11+ 年（26,000 HKD/月）
     },
     2: { // 大學生
-        0: 240000,
-        3: 300000,
-        6: 420000,
-        11: 540000
+        0: 216000, // 18,000 HKD/月
+        3: 264000, // 22,000 HKD/月
+        6: 336000, // 28,000 HKD/月
+        11: 420000  // 35,000 HKD/月
     },
     3: { // 碩士
-        0: 300000,
-        3: 420000,
-        6: 600000,
-        11: 780000
+        0: 264000, // 22,000 HKD/月
+        3: 336000, // 28,000 HKD/月
+        6: 480000, // 40,000 HKD/月
+        11: 600000  // 50,000 HKD/月
     },
     4: { // 博士
-        0: 360000,
-        3: 540000,
-        6: 780000,
-        11: 960000
+        0: 336000, // 28,000 HKD/月
+        3: 480000, // 40,000 HKD/月
+        6: 600000, // 50,000 HKD/月
+        11: 720000  // 60,000 HKD/月
     }
 };
 
@@ -129,23 +129,36 @@ function calculateWorth() {
 
     // 計算每日總成本（包括車費）
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50; // 假設每小時成本 50 HKD
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 40; // 假設每小時成本 40 HKD（增加車費影響）
 
     // 計算基礎得分（以每日淨薪水除以總成本為基礎）
-    let worth = (netSalaryPerDay / totalCostPerDay) * 1; // 乘以 1 作為基礎得分（降低基礎得分影響）
+    let worth = (netSalaryPerDay / totalCostPerDay) * 0.8; // 乘以 0.8 作為基礎得分（進一步降低基礎得分影響）
 
-    // 考慮工作環境同同事環境（作為乘數，範圍 0.05 至 1.25）
-    const envMultiplier = (workEnvScore * colleagueEnvScore) / 20; // 最大值 5*5=25，範圍 0.05 至 1.25（增加環境影響）
+    // 考慮工時影響（每日 8.8 小時係標準，超過會減分）
+    const hoursPenalty = hoursPerDay > 8.8 ? (hoursPerDay - 8.8) / 8.8 : 0; // 每超 1 小時減 11.36%（1/8.8）
+    worth = worth * (1 - hoursPenalty);
+
+    // 考慮健康影響（每日超過 10 小時減分）
+    if (hoursPerDay > 10) {
+        worth = worth * 0.8; // 減 20% 得分
+    }
+
+    // 考慮工作環境同同事環境（作為乘數，範圍 0.0625 至 1.5625）
+    const envMultiplier = (workEnvScore * colleagueEnvScore) / 16; // 最大值 5*5=25，範圍 0.0625 至 1.5625（增加環境影響）
     worth = worth * envMultiplier;
 
-    // 考慮年假（年假越多，得分越高）
-    const leaveBonus = annualLeave / 14; // 假設 14 天係標準，範圍 0 至 2（假設最多 28 天）
-    worth = worth * (1 + leaveBonus * 0.05); // 年假加成最多 0.1（降低加成影響）
+    // 考慮工作壓力（假設同事環境差會增加壓力）
+    const stressMultiplier = colleagueEnvScore <= 2 ? 0.9 : colleagueEnvScore >= 4 ? 1.1 : 1.0; // 差環境減 10%，好環境加 10%
+    worth = worth * stressMultiplier;
 
-    // 考慮學業水準、大學類型同工作經驗嘅加成（每項最多加 0.03）
-    const educationBonus = educationScore * 0.0075; // 每級加 0.0075，最大 0.03
-    const uniTypeBonus = uniTypeScore * 0.0075; // 每級加 0.0075，最大 0.03
-    const experienceBonus = Math.min(experience * 0.003, 0.03); // 每一年加 0.003，最大 0.03
+    // 考慮年假（年假越多，得分越高）
+    const leaveBonus = annualLeave / 10; // 假設 10 天係標準，範圍 0 至 2（假設最多 20 天）
+    worth = worth * (1 + leaveBonus * 0.05); // 年假加成最多 0.1
+
+    // 考慮學業水準、大學類型同工作經驗嘅加成（每項最多加 0.02）
+    const educationBonus = educationScore * 0.005; // 每級加 0.005，最大 0.02
+    const uniTypeBonus = uniTypeScore * 0.005; // 每級加 0.005，最大 0.02
+    const experienceBonus = Math.min(experience * 0.002, 0.02); // 每一年加 0.002，最大 0.02
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
 
     // 考慮薪水同市場平均嘅比較
@@ -156,7 +169,7 @@ function calculateWorth() {
     else experienceRange = 11;
     const marketSalary = marketSalaries[educationScore][experienceRange];
     const salaryRatio = annualSalary / marketSalary;
-    worth = worth * Math.min(salaryRatio * 1.2, 1.5); // 薪水比市場平均低會大幅降低得分，高最多加 50%（增加薪水影響）
+    worth = worth * Math.min(salaryRatio * 1.3, 1.5); // 薪水比市場平均低會大幅降低得分，高最多加 50%（增加薪水影響）
 
     // 確保得分喺 1 到 100 之間
     worth = Math.max(1, Math.min(100, worth));
