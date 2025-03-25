@@ -129,24 +129,24 @@ function calculateWorth() {
 
     // 計算每日總成本（包括車費）
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 60; // 假設每小時成本 60 HKD
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50; // 假設每小時成本 50 HKD（降低成本影響）
 
-    // 計算基礎得分
-    let worth = (netSalaryPerDay / totalCostPerDay) * workEnvScore * colleagueEnvScore / 10;
+    // 計算基礎得分（調整除數，令得分更高）
+    let worth = (netSalaryPerDay / totalCostPerDay) * workEnvScore * colleagueEnvScore / 5; // 除數改為 5
 
-    // 考慮學業水準、大學類型同工作經驗嘅加成
-    const educationBonus = educationScore * 0.1; // 每級加 0.1
-    const uniTypeBonus = uniTypeScore * 0.1; // 每級加 0.1
-    const experienceBonus = experience * 0.05; // 每一年加 0.05
+    // 考慮學業水準、大學類型同工作經驗嘅加成（增加加成效果）
+    const educationBonus = educationScore * 0.15; // 每級加 0.15
+    const uniTypeBonus = uniTypeScore * 0.15; // 每級加 0.15
+    const experienceBonus = experience * 0.08; // 每一年加 0.08
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
 
-    // 顯示結果
+    // 調整評級範圍，令「好」更容易達到
     let resultText;
-    if (worth < 1.0) {
+    if (worth < 1.5) {
         resultText = '非常差 (😱)';
-    } else if (worth >= 1.0 && worth < 1.8) {
+    } else if (worth >= 1.5 && worth < 2.5) {
         resultText = '一般 (😐)';
-    } else if (worth >= 1.8 && worth < 2.5) {
+    } else if (worth >= 2.5 && worth < 3.5) {
         resultText = '很好 (😎)';
     } else {
         resultText = '超級好 (🤩)';

@@ -3,27 +3,27 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* 暗黑模式 */
-body.dark-mode {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+/* 明亮模式 */
+body:not(.dark-mode) {
+    background-color: #f0f0f0;
+    color: #333;
 }
 
 /* 標題區域 */
 header {
     text-align: center;
     padding: 20px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-header.dark-mode {
     background-color: #2c2c2c;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+header:not(.dark-mode) {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 header h1 {
     margin: 0;
@@ -33,14 +33,14 @@ header p {
     margin: 5px 0;
 }
 header a {
-    color: #4CAF50;
+    color: #1E90FF;
     text-decoration: none;
 }
 header a:hover {
     text-decoration: underline;
 }
 #theme-toggle {
-    background-color: #4CAF50;
+    background-color: #1E90FF;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -49,7 +49,7 @@ header a:hover {
     margin-top: 10px;
 }
 #theme-toggle:hover {
-    background-color: #45a049;
+    background-color: #1C86EE;
 }
 
 /* 主要容器 */
@@ -62,13 +62,13 @@ header a:hover {
 .form-section, .result-section {
     flex: 1;
     padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-.form-section.dark-mode, .result-section.dark-mode {
     background-color: #2c2c2c;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.form-section:not(.dark-mode), .result-section:not(.dark-mode) {
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 表單樣式 */
@@ -81,15 +81,15 @@ input[type="number"] {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #555;
     border-radius: 5px;
-    background-color: #fff;
-    color: #333;
-}
-input[type="number"].dark-mode {
     background-color: #3c3c3c;
     color: #e0e0e0;
-    border-color: #555;
+}
+input[type="number"]:not(.dark-mode) {
+    background-color: #fff;
+    color: #333;
+    border-color: #ccc;
 }
 
 /* 按鈕選擇 */
@@ -100,32 +100,39 @@ input[type="number"].dark-mode {
     margin-bottom: 10px;
 }
 .button-group button.option {
-    background-color: #e0e0e0;
-    border: 1px solid #ccc;
+    background-color: #3c3c3c;
+    border: 1px solid #555;
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-.button-group button.option.active {
-    background-color: #4CAF50;
-    color: white;
-    border-color: #4CAF50;
+    color: #e0e0e0;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 .button-group button.option:hover {
-    background-color: #d0d0d0;
+    background-color: #4c4c4c;
+    border-color: #1E90FF;
+}
+.button-group button.option.active {
+    background-color: #1E90FF;
+    color: white;
+    border-color: #1E90FF;
 }
 .button-group button.option.active:hover {
-    background-color: #45a049;
+    background-color: #1C86EE;
 }
-.dark-mode .button-group button.option {
-    background-color: #3c3c3c;
-    border-color: #555;
-    color: #e0e0e0;
+.button-group:not(.dark-mode) button.option {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+    color: #333;
 }
-.dark-mode .button-group button.option.active {
-    background-color: #4CAF50;
+.button-group:not(.dark-mode) button.option:hover {
+    background-color: #d0d0d0;
+    border-color: #1E90FF;
+}
+.button-group:not(.dark-mode) button.option.active {
+    background-color: #1E90FF;
     color: white;
+    border-color: #1E90FF;
 }
 
 /* 行動按鈕 */
@@ -135,7 +142,7 @@ input[type="number"].dark-mode {
     gap: 10px;
 }
 .action-buttons button {
-    background-color: #4CAF50;
+    background-color: #1E90FF;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -143,28 +150,28 @@ input[type="number"].dark-mode {
     cursor: pointer;
 }
 .action-buttons button:hover {
-    background-color: #45a049;
+    background-color: #1C86EE;
 }
 
 /* 結果區域 */
 #result {
     margin-top: 20px;
     font-size: 1.2em;
-    color: #333;
-}
-#result.dark-mode {
     color: #e0e0e0;
+}
+#result:not(.dark-mode) {
+    color: #333;
 }
 #report {
     margin-top: 20px;
     padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-#report.dark-mode {
     background-color: #3c3c3c;
-    border-color: #555;
+    border-radius: 5px;
+    border: 1px solid #555;
+}
+#report:not(.dark-mode) {
+    background-color: #f9f9f9;
+    border-color: #ddd;
 }
 #report h2 {
     font-size: 1.5em;
