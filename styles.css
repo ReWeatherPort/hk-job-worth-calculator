@@ -2,8 +2,8 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #1a1a1a; /* 預設暗黑模式背景 */
-    color: #ddd; /* 預設字體顏色 */
+    background-color: #1a1a1a;
+    color: #ddd;
 }
 
 header {
@@ -35,6 +35,12 @@ header p {
     margin-top: 1em;
 }
 
+.user-tracker {
+    font-size: 0.9em;
+    margin-top: 0.5em;
+    color: #bbb;
+}
+
 .github-logo {
     width: 20px;
     vertical-align: middle;
@@ -48,7 +54,7 @@ header p {
 }
 
 .card {
-    background-color: #2c2c2c; /* 暗黑模式卡片背景 */
+    background-color: #2c2c2c;
     border-radius: 10px;
     padding: 2em;
     margin-bottom: 2em;
@@ -64,7 +70,7 @@ header p {
     margin-top: 0;
     font-size: 1.8em;
     font-weight: 500;
-    color: #ddd; /* 暗黑模式標題顏色 */
+    color: #ddd;
 }
 
 .form-section h2 i, .result-section h2 i {
@@ -80,7 +86,7 @@ label {
     display: block;
     margin-bottom: 0.5em;
     font-weight: 500;
-    color: #ddd; /* 暗黑模式標籤顏色 */
+    color: #ddd;
 }
 
 label i {
@@ -91,11 +97,11 @@ label i {
 input[type="number"] {
     width: 100%;
     padding: 0.8em;
-    border: 1px solid #555; /* 暗黑模式邊框 */
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 1em;
-    background-color: #444; /* 暗黑模式輸入框背景 */
-    color: #ddd; /* 暗黑模式輸入框文字 */
+    background-color: #444;
+    color: #ddd;
     transition: border-color 0.3s ease;
 }
 
@@ -114,7 +120,7 @@ input[type="number"]:focus {
     padding: 0.6em 1.2em;
     border: 1px solid #555;
     background-color: #444;
-    color: #ddd; /* 確保按鈕文字喺暗黑模式下可見 */
+    color: #ddd;
     cursor: pointer;
     border-radius: 5px;
     font-size: 0.9em;
@@ -162,15 +168,15 @@ button i {
 }
 
 #report h3 {
-    color: #ddd; /* 確保標題喺暗黑模式下可見 */
+    color: #ddd;
 }
 
 #report p {
-    color: #ddd; /* 確保段落文字喺暗黑模式下可見 */
+    color: #ddd;
 }
 
 #report ul {
-    color: #ddd; /* 確保列表文字喺暗黑模式下可見 */
+    color: #ddd;
 }
 
 #report table {
@@ -181,18 +187,18 @@ button i {
 
 #report th, #report td {
     padding: 0.8em;
-    border: 1px solid #555; /* 暗黑模式表格邊框 */
+    border: 1px solid #555;
     text-align: left;
 }
 
 #report th {
-    background-color: #333; /* 暗黑模式表頭背景 */
+    background-color: #333;
     font-weight: 500;
-    color: #ddd; /* 暗黑模式表頭文字 */
+    color: #ddd;
 }
 
 #report td {
-    color: #ddd; /* 暗黑模式表格內容文字 */
+    color: #ddd;
 }
 
 #report td i {
@@ -200,19 +206,22 @@ button i {
     color: #3498db;
 }
 
-/* 報告中嘅連結樣式（暗黑模式預設） */
 #report a {
-    color: #66b0ff; /* 淺藍色，喺暗黑模式下清晰可見 */
+    color: #66b0ff;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 #report a:hover {
-    color: #99cfff; /* hover 時變更淺嘅藍色 */
+    color: #99cfff;
     text-decoration: underline;
 }
 
-/* 明亮模式 */
+#share-section {
+    text-align: center;
+    margin-top: 1em;
+}
+
 body.light-mode {
     background-color: #f5f7fa;
     color: #333;
@@ -274,12 +283,11 @@ body.light-mode {
     color: #333;
 }
 
-/* 明亮模式下嘅連結樣式 */
 .light-mode #report a {
-    color: #1a73e8; /* 深藍色，喺明亮模式下清晰可見 */
+    color: #1a73e8;
 }
 
 .light-mode #report a:hover {
-    color: #1557b0; /* hover 時變更深嘅藍色 */
+    color: #1557b0;
     text-decoration: underline;
 }

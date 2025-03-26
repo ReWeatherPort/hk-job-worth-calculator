@@ -3,149 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社蓄的自我評價</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>社蓄的自我評價 v1.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="dark-mode">
     <header>
-        <h1><i class="fas fa-user-tie"></i> 社蓄的自我評價</h1>
-        <p>幫助你評價而家份工</p>
-        <button id="theme-toggle"><i class="fas fa-moon"></i> 切換暗黑模式</button>
-        <p class="developer-info">Github: ReWeatherPort <a href="https://github.com/ReWeatherPort" target="_blank"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" class="github-logo"></a></p>
+        <h1><i class="fas fa-briefcase"></i> 社蓄的自我評價 v1.1</h1>
+        <p>幫你評估你嘅工作性價比</p>
+        <button id="theme-toggle"><i class="fas fa-sun"></i> 切換明亮模式</button>
+        <div class="developer-info">
+            開發者：ReWeatherPort
+            <a href="https://github.com/ReWeatherPort/hk-job-worth-calculator" target="_blank">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" class="github-logo">
+            </a>
+        </div>
+        <div class="user-tracker">
+            <p>已經有 <span id="user-count">0</span> 位用戶使用過呢個應用程式！</p>
+        </div>
     </header>
-
     <div class="container">
-        <div class="form-section card">
-            <h2><i class="fas fa-pen"></i> 輸入你的資料</h2>
+        <div class="card form-section">
+            <h2><i class="fas fa-calculator"></i> 工作資料</h2>
             <div class="form-group">
-                <label for="monthlySalary"><i class="fas fa-money-bill-wave"></i> 稅前月薪 (HKD):</label>
-                <input type="number" id="monthlySalary" placeholder="例如 20000">
+                <label for="monthlySalary"><i class="fas fa-money-bill-wave"></i> 稅前月薪（HKD）：</label>
+                <input type="number" id="monthlySalary" placeholder="例如：20000">
             </div>
-
             <div class="form-group">
-                <label for="workDays"><i class="fas fa-calendar-week"></i> 每週工作天數:</label>
+                <label for="workDays"><i class="fas fa-calendar-week"></i> 每週工作天數：</label>
                 <input type="number" id="workDays" value="5" min="1" max="7">
             </div>
-
             <div class="form-group">
-                <label for="wfhDays"><i class="fas fa-home"></i> 每週在家工作天數:</label>
+                <label for="wfhDays"><i class="fas fa-home"></i> 每週在家工作天數：</label>
                 <input type="number" id="wfhDays" value="0" min="0" max="7">
             </div>
-
             <div class="form-group">
-                <label for="hours"><i class="fas fa-clock"></i> 每日工作時數:</label>
-                <input type="number" id="hours" value="8" step="0.5" min="1">
+                <label for="hours"><i class="fas fa-clock"></i> 每日工作時數（唔計食飯時間）：</label>
+                <input type="number" id="hours" value="8" min="1" step="0.5">
             </div>
-
             <div class="form-group">
-                <label for="commute"><i class="fas fa-car"></i> 單程通勤時間 (小時):</label>
-                <input type="number" id="commute" value="0.5" step="0.1" min="0">
+                <label for="lunchTime"><i class="fas fa-utensils"></i> 食飯時間（小時）：</label>
+                <input type="number" id="lunchTime" value="1" min="0" step="0.5">
             </div>
-
             <div class="form-group">
-                <label for="transportCost"><i class="fas fa-ticket-alt"></i> 每日車費 (HKD):</label>
-                <input type="number" id="transportCost" value="0" step="1" min="0">
+                <label for="commute"><i class="fas fa-car"></i> 單程通勤時間（小時）：</label>
+                <input type="number" id="commute" value="0.5" min="0" step="0.5">
             </div>
-
             <div class="form-group">
-                <label for="annualLeave"><i class="fas fa-umbrella-beach"></i> 年假日數:</label>
+                <label for="transportCost"><i class="fas fa-ticket-alt"></i> 每日車費（HKD）：</label>
+                <input type="number" id="transportCost" value="0" min="0">
+            </div>
+            <div class="form-group">
+                <label for="annualLeave"><i class="fas fa-umbrella-beach"></i> 年假日數（天）：</label>
                 <input type="number" id="annualLeave" value="7" min="0">
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-building"></i> 工作環境:</label>
+                <label><i class="fas fa-building"></i> 工作環境：</label>
                 <div id="workEnv" class="button-group">
-                    <button class="option" data-value="5">甲級寫字樓</button>
+                    <button class="option active" data-value="5">甲級寫字樓</button>
                     <button class="option" data-value="4">普通商業大樓/在家工作</button>
                     <button class="option" data-value="3">工業大廈</button>
                     <button class="option" data-value="2">工廠</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-users"></i> 同事環境:</label>
+                <label><i class="fas fa-users"></i> 同事環境：</label>
                 <div id="colleagueEnv" class="button-group">
                     <button class="option" data-value="1">全部都係PK</button>
                     <button class="option" data-value="2">好多 Free Rider</button>
-                    <button class="option" data-value="3">萍水相逢</button>
+                    <button class="option active" data-value="3">萍水相逢</button>
                     <button class="option" data-value="4">開心工作</button>
                     <button class="option" data-value="5">Friend 過夾band</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-exclamation-circle"></i> 工作壓力:</label>
+                <label><i class="fas fa-exclamation-circle"></i> 工作壓力：</label>
                 <div id="workStress" class="button-group">
                     <button class="option" data-value="1">完全無壓力</button>
                     <button class="option" data-value="2">壓力少</button>
-                    <button class="option" data-value="3">一般壓力</button>
+                    <button class="option active" data-value="3">一般壓力</button>
                     <button class="option" data-value="4">壓力大</button>
                     <button class="option" data-value="5">極大壓力</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-chart-line"></i> 職業發展機會:</label>
+                <label><i class="fas fa-chart-line"></i> 職業發展機會：</label>
                 <div id="careerGrowth" class="button-group">
                     <button class="option" data-value="1">完全無機會</button>
                     <button class="option" data-value="2">機會少</button>
-                    <button class="option" data-value="3">一般機會</button>
+                    <button class="option active" data-value="3">一般機會</button>
                     <button class="option" data-value="4">機會多</button>
                     <button class="option" data-value="5">極多機會</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-briefcase"></i> 行業:</label>
+                <label><i class="fas fa-toilet"></i> 公司廁所清潔度：</label>
+                <div id="toiletCleanliness" class="button-group">
+                    <button class="option" data-value="1">好污糟</button>
+                    <button class="option active" data-value="2">一般</button>
+                    <button class="option" data-value="3">好乾淨</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-user-tie"></i> 老細態度：</label>
+                <div id="bossAttitude" class="button-group">
+                    <button class="option" data-value="1">好差</button>
+                    <button class="option active" data-value="2">一般</button>
+                    <button class="option" data-value="3">好好</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-heartbeat"></i> 有無醫療保險：</label>
+                <div id="medicalInsurance" class="button-group">
+                    <button class="option active" data-value="0">無</button>
+                    <button class="option" data-value="1">有</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-briefcase"></i> 行業：</label>
                 <div id="industry" class="button-group">
                     <button class="option" data-value="finance">金融</button>
                     <button class="option" data-value="education">教育</button>
                     <button class="option" data-value="retail">零售</button>
                     <button class="option" data-value="it">資訊科技</button>
-                    <button class="option" data-value="others">其他</button>
+                    <button class="option active" data-value="others">其他</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-graduation-cap"></i> 學業水準:</label>
+                <label><i class="fas fa-graduation-cap"></i> 學業水準：</label>
                 <div id="education" class="button-group">
-                    <button class="option" data-value="1">大專</button>
+                    <button class="option active" data-value="1">大專</button>
                     <button class="option" data-value="2">大學生</button>
                     <button class="option" data-value="3">碩士</button>
                     <button class="option" data-value="4">博士</button>
                 </div>
             </div>
-
             <div class="form-group">
-                <label for="experience"><i class="fas fa-briefcase"></i> 工作經驗 (年):</label>
-                <input type="number" id="experience" value="0" step="0.5" min="0">
+                <label for="experience"><i class="fas fa-briefcase"></i> 工作經驗（年）：</label>
+                <input type="number" id="experience" value="0" min="0">
             </div>
-
             <div class="form-group">
-                <label><i class="fas fa-university"></i> 大學類型:</label>
+                <label><i class="fas fa-university"></i> 大學類型：</label>
                 <div id="uniType" class="button-group">
-                    <button class="option" data-value="1">大專</button>
+                    <button class="option active" data-value="1">大專</button>
                     <button class="option" data-value="2">私大（樹仁/恒大）</button>
                     <button class="option" data-value="3">八大</button>
                     <button class="option" data-value="4">海歸（外國升學）</button>
                 </div>
             </div>
-
             <div class="form-actions">
-                <button onclick="calculateWorth()"><i class="fas fa-calculator"></i> 計算</button>
+                <button onclick="calculateWorth()"><i class="fas fa-calculator"></i> 甲級薪資機</button>
                 <button onclick="resetForm()"><i class="fas fa-undo"></i> 重設</button>
             </div>
         </div>
-
-        <div class="result-section card">
-            <h2><i class="fas fa-chart-bar"></i> 結果</h2>
+        <div class="card result-section">
+            <h2><i class="fas fa-chart-bar"></i> 評估結果</h2>
             <p id="result"></p>
             <div id="report"></div>
+            <div id="share-section" style="display: none;">
+                <button onclick="shareResult()"><i class="fas fa-share-alt"></i> 分享你嘅結果</button>
+            </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

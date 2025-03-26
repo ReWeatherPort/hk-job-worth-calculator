@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享你嘅工作性價比</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="share.css">
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-share-alt"></i> 我嘅工作性價比報告</h1>
+        <p>同朋友分享你嘅工作評估結果！</p>
+    </header>
+    <div class="container">
+        <div class="card result-card">
+            <h2><i class="fas fa-chart-bar"></i> 評估結果</h2>
+            <div class="score-circle">
+                <span id="worth"></span>
+            </div>
+            <h3 id="result"></h3>
+            <div class="result-description" id="result-description"></div>
+            <div class="share-buttons">
+                <button onclick="shareToSocial('facebook')"><i class="fab fa-facebook"></i> 分享到 Facebook</button>
+                <button onclick="shareToSocial('twitter')"><i class="fab fa-twitter"></i> 分享到 Twitter</button>
+                <button onclick="copyLink()"><i class="fas fa-link"></i> 複製連結</button>
+            </div>
+        </div>
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> 結果解釋</h2>
+            <p>呢個工作性價比得分係基於多項因素計算，包括工作時數、通勤時間、年假、工作環境、壓力、職業發展機會等。以下係得分嘅評級標準：</p>
+            <ul>
+                <li><strong>1-20 分：社蓄生活</strong> - 你嘅工作可能好辛苦，性價比好低，建議考慮搵新機會。</li>
+                <li><strong>21-40 分：好辛苦 (😓)</strong> - 工作負擔重，報酬同付出唔成正比，可以同老細傾吓改善條件。</li>
+                <li><strong>41-60 分：正常啦 (😐)</strong> - 工作同報酬算平衡，但仲有進步空間。</li>
+                <li><strong>61-80 分：幾好 (😊)</strong> - 工作性價比唔錯，值得繼續努力。</li>
+                <li><strong>81-90 分：好正嘅工作 (😎)</strong> - 恭喜！你嘅工作性價比好高，係一個好正嘅選擇。</li>
+                <li><strong>91-100 分：你上世救宇宙 (🤩)</strong> - 你嘅工作係夢想級別，繼續保持！</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2><i class="fas fa-home"></i> 返去主頁</h2>
+            <p>想再試吓？返去主頁重新評估你嘅工作！</p>
+            <button onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> 返去主頁</button>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const worth = urlParams.get('worth');
+        const result = decodeURIComponent(urlParams.get('result'));
+
+        document.getElementById('worth').innerText = worth;
+        document.getElementById('result').innerText = result;
+
+        let description = '';
+        if (worth <= 20) {
+            description = '你嘅工作性價比好低，可能係一個「社蓄生活」。建議你重新審視工作條件，或者考慮搵新機會！';
+        } else if (worth <= 40) {
+            description = '你嘅工作好辛苦，報酬同付出唔成正比。試吓同老細傾改善條件，或者搵新嘅發展機會！';
+        } else if (worth <= 60) {
+            description = '你嘅工作性價比正常，唔算差，但仲有進步空間。可以考慮點樣提升工作環境或者爭取更好嘅待遇！';
+        } else if (worth <= 80) {
+            description = '你嘅工作性價比幾好，報酬同付出比較平衡。繼續努力，或者搵方法再提升自己！';
+        } else if (worth <= 90) {
+            description = '你嘅工作性價比好高，係一個好正嘅選擇！繼續保持，同時可以搵更多發展機會！';
+        } else {
+            description = '你嘅工作性價比係夢想級別，簡直係完美！繼續享受你嘅工作，同時分享你嘅經驗畀其他人！';
+        }
+        document.getElementById('result-description').innerText = description;
+
+        function shareToSocial(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`我嘅工作性價比係 ${worth} 分 - ${result}！快啲試吓你嘅工作點樣！`);
+            let shareUrl;
+            if (platform === 'facebook') {
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
+            } else if (platform === 'twitter') {
+                shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+            }
+            window.open(shareUrl, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('連結已複製！快啲同朋友分享！');
+            });
+        }
+    </script>
+</body>
+</html>
