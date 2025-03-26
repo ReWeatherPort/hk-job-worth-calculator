@@ -114,7 +114,8 @@ input[type="number"]:focus {
 .button-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5em;
+    gap: 0.8em; /* 增加按鈕之間嘅間距 */
+    justify-content: flex-start; /* 確保按鈕從左到右排列 */
 }
 
 .option {
@@ -126,6 +127,8 @@ input[type="number"]:focus {
     border-radius: 5px;
     font-size: 0.9em;
     transition: all 0.3s ease;
+    white-space: nowrap; /* 防止按鈕文字換行 */
+    flex: 0 0 auto; /* 確保按鈕大小根據內容調整 */
 }
 
 .option:hover {
@@ -136,6 +139,7 @@ input[type="number"]:focus {
     background-color: #3498db;
     color: white;
     border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* 增加 active 狀態嘅陰影效果 */
 }
 
 .form-actions {
@@ -266,6 +270,13 @@ body.light-mode {
     background-color: #e9ecef;
 }
 
+.light-mode .option.active {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    color: white;
+    box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+}
+
 .light-mode #report h3 {
     color: #2c3e50;
 }
@@ -295,4 +306,126 @@ body.light-mode {
 .light-mode #report a:hover {
     color: #1557b0;
     text-decoration: underline;
+}
+
+/* 響應式設計：喺小屏幕上調整佈局 */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    header p {
+        font-size: 1em;
+    }
+
+    .container {
+        margin: 1em auto;
+        padding: 0 0.5em;
+    }
+
+    .card {
+        padding: 1.5em;
+    }
+
+    .form-section h2, .result-section h2 {
+        font-size: 1.5em;
+    }
+
+    label {
+        font-size: 0.9em;
+    }
+
+    input[type="number"] {
+        padding: 0.6em;
+        font-size: 0.9em;
+    }
+
+    .button-group {
+        gap: 0.5em; /* 喺小屏幕上減少間距 */
+    }
+
+    .option {
+        padding: 0.5em 1em; /* 喺小屏幕上減少按鈕嘅內邊距 */
+        font-size: 0.85em; /* 喺小屏幕上減少字體大小 */
+        min-width: 100px; /* 確保按鈕有最小寬度，避免過窄 */
+    }
+
+    button {
+        padding: 0.6em 1.2em;
+        font-size: 0.9em;
+    }
+
+    #report h3 {
+        font-size: 1.3em;
+    }
+
+    #report p, #report ul li {
+        font-size: 0.9em;
+    }
+
+    #report table th, #report table td {
+        padding: 0.6em;
+        font-size: 0.9em;
+    }
+}
+
+/* 喺更小嘅屏幕上進一步調整 */
+@media (max-width: 400px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    header p {
+        font-size: 0.9em;
+    }
+
+    .form-section h2, .result-section h2 {
+        font-size: 1.3em;
+    }
+
+    label {
+        font-size: 0.85em;
+    }
+
+    input[type="number"] {
+        padding: 0.5em;
+        font-size: 0.85em;
+    }
+
+    .button-group {
+        gap: 0.4em;
+    }
+
+    .option {
+        padding: 0.4em 0.8em;
+        font-size: 0.8em;
+        min-width: 90px;
+    }
+
+    button {
+        padding: 0.5em 1em;
+        font-size: 0.85em;
+    }
+
+    #report h3 {
+        font-size: 1.2em;
+    }
+
+    #report p, #report ul li {
+        font-size: 0.85em;
+    }
+
+    #report table th, #report table td {
+        padding: 0.5em;
+        font-size: 0.85em;
+    }
+}
+
+/* 確保表格喺小屏幕上可以橫向滾動 */
+@media (max-width: 600px) {
+    #report table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }
