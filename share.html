@@ -25,11 +25,19 @@
                 <button onclick="copyLink()"><i class="fas fa-link"></i> 複製連結</button>
             </div>
         </div>
-        <div class="card" id="user-report">
-            <h2><i class="fas fa-user"></i> 我嘅選擇</h2>
+        <div class="card accordion">
+            <h2 class="accordion-header" onclick="toggleAccordion('user-report-content')">
+                <i class="fas fa-user"></i> 我嘅選擇
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </h2>
+            <div class="accordion-content" id="user-report-content"></div>
         </div>
-        <div class="card" id="comparison-report">
-            <h2><i class="fas fa-city"></i> 香港平均數據比較</h2>
+        <div class="card accordion">
+            <h2 class="accordion-header" onclick="toggleAccordion('comparison-report-content')">
+                <i class="fas fa-city"></i> 香港平均數據比較
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </h2>
+            <div class="accordion-content" id="comparison-report-content"></div>
         </div>
         <div class="card">
             <h2><i class="fas fa-home"></i> 返回主頁</h2>
@@ -231,16 +239,18 @@
             // 顯示得分細分同分析
             document.getElementById('result-details').innerHTML = `
                 <h4>得分細分</h4>
-                <table>
-                    <tr><th>因素</th><th>得分影響</th><th>權重</th></tr>
-                    ${scoreBreakdown.map(item => `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.score.toFixed(1)}</td>
-                            <td>${item.weight}%</td>
-                        </tr>
-                    `).join('')}
-                </table>
+                <div class="scrollable-table">
+                    <table>
+                        <tr><th>因素</th><th>得分影響</th><th>權重</th></tr>
+                        ${scoreBreakdown.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.score.toFixed(1)}</td>
+                                <td>${item.weight}%</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
                 <h4>分析</h4>
                 <p>你嘅得分主要受惠於：<strong>${topFactor.name}</strong>（+${topFactor.score.toFixed(1)} 分）。</p>
                 <p>你嘅得分主要被拖累於：<strong>${bottomFactor.name}</strong>（${bottomFactor.score.toFixed(1)} 分）。</p>
@@ -248,31 +258,41 @@
                 <p>${advice}</p>
             `;
 
-            // 生成「我嘅選擇」報告（唔顯示薪水）
+            // 生成「我嘅選擇」報告（唔顯示薪水，分組展示）
             let userReportHTML = `
+                <h4>工作時間</h4>
                 <table>
                     <tr><th><i class="fas fa-calendar-week"></i> 每週工作天數</th><td>${workDaysPerWeek}</td></tr>
                     <tr><th><i class="fas fa-home"></i> 每週在家工作天數</th><td>${wfhDaysPerWeek}</td></tr>
-                    <tr><th><i class="fas fa-clock"></i> 每日工作時數（唔計食飯時間）</th><td>${hoursPerDay}</td></tr>
+                    <tr><th><i class="fas fa-clock"></i> 每日工作時數</th><td>${hoursPerDay}</td></tr>
                     <tr><th><i class="fas fa-utensils"></i> 食飯時間（小時）</th><td>${lunchTime}</td></tr>
                     <tr><th><i class="fas fa-car"></i> 單程通勤時間（小時）</th><td>${commute}</td></tr>
                     <tr><th><i class="fas fa-ticket-alt"></i> 每日車費（HKD）</th><td>${transportCost}</td></tr>
+                </table>
+                <h4>福利</h4>
+                <table>
                     <tr><th><i class="fas fa-umbrella-beach"></i> 年假日數（天）</th><td>${annualLeave}</td></tr>
+                    <tr><th><i class="fas fa-heartbeat"></i> 有無醫療保險</th><td>${medicalInsuranceText[medicalInsurance]}</td></tr>
+                    <tr><th><i class="fas fa-clock"></i> 有冇OT補水</th><td>${otCompensationText[otCompensation]}</td></tr>
+                </table>
+                <h4>工作環境</h4>
+                <table>
                     <tr><th><i class="fas fa-building"></i> 工作環境</th><td>${workEnvText[workEnvScore]}</td></tr>
                     <tr><th><i class="fas fa-users"></i> 同事環境</th><td>${colleagueEnvText[colleagueEnvScore]}</td></tr>
                     <tr><th><i class="fas fa-exclamation-circle"></i> 工作壓力</th><td>${workStressText[workStressScore]}</td></tr>
                     <tr><th><i class="fas fa-chart-line"></i> 職業發展機會</th><td>${careerGrowthText[careerGrowthScore]}</td></tr>
                     <tr><th><i class="fas fa-toilet"></i> 公司廁所清潔度</th><td>${toiletCleanlinessText[toiletCleanlinessScore]}</td></tr>
                     <tr><th><i class="fas fa-user-tie"></i> 老細態度</th><td>${bossAttitudeText[bossAttitudeScore]}</td></tr>
-                    <tr><th><i class="fas fa-heartbeat"></i> 有無醫療保險</th><td>${medicalInsuranceText[medicalInsurance]}</td></tr>
-                    <tr><th><i class="fas fa-clock"></i> 有冇OT補水</th><td>${otCompensationText[otCompensation]}</td></tr>
+                </table>
+                <h4>個人背景</h4>
+                <table>
                     <tr><th><i class="fas fa-briefcase"></i> 行業</th><td>${industryText[industry]}</td></tr>
                     <tr><th><i class="fas fa-graduation-cap"></i> 學業水準</th><td>${educationText[educationScore]}</td></tr>
                     <tr><th><i class="fas fa-briefcase"></i> 工作經驗（年）</th><td>${experience}</td></tr>
                     <tr><th><i class="fas fa-university"></i> 大學類型</th><td>${uniTypeText[uniTypeScore]}</td></tr>
                 </table>
             `;
-            document.getElementById('user-report').innerHTML += userReportHTML;
+            document.getElementById('user-report-content').innerHTML = userReportHTML;
 
             // 香港平均數據比較（唔顯示薪水）
             const hoursComparison = hoursPerDay > hkStats.avgHoursPerDay 
@@ -315,10 +335,10 @@
                     <tr><th><i class="fas fa-ticket-alt"></i> 每日車費</th><td>${transportCostComparison}</td></tr>
                 </table>
             `;
-            document.getElementById('comparison-report').innerHTML += comparisonReportHTML;
+            document.getElementById('comparison-report-content').innerHTML = comparisonReportHTML;
         } else {
-            document.getElementById('user-report').innerHTML += '<p>無法載入報告數據，請返回主頁重新評測。</p>';
-            document.getElementById('comparison-report').innerHTML += '<p>無法載入報告數據，請返回主頁重新評測。</p>';
+            document.getElementById('user-report-content').innerHTML = '<p>無法載入報告數據，請返回主頁重新評測。</p>';
+            document.getElementById('comparison-report-content').innerHTML = '<p>無法載入報告數據，請返回主頁重新評測。</p>';
             document.getElementById('result-details').innerHTML = '<p>無法載入得分細分數據，請返回主頁重新評測。</p>';
         }
 
@@ -339,6 +359,21 @@
             navigator.clipboard.writeText(url).then(() => {
                 alert('連結已複製！');
             });
+        }
+
+        // Accordion 展開/收起功能
+        function toggleAccordion(contentId) {
+            const content = document.getElementById(contentId);
+            const icon = content.previousElementSibling.querySelector('.accordion-icon');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
         }
     </script>
 </body>
