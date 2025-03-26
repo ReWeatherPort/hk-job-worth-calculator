@@ -41,18 +41,6 @@ const hkStats = {
     avgTransportCost: 30 // 2024 年香港運輸署數據（每日平均車費）
 };
 
-// 文字映射
-const workEnvText = { 5: "甲級寫字樓", 4: "普通商業大樓/在家工作", 3: "工業大廈", 2: "工廠" };
-const colleagueEnvText = { 1: "全部都係PK", 2: "好多 Free Rider", 3: "萍水相逢", 4: "開心工作", 5: "Friend 過夾band" };
-const workStressText = { 1: "完全無壓力", 2: "壓力少", 3: "一般壓力", 4: "壓力大", 5: "極大壓力" };
-const careerGrowthText = { 1: "完全無機會", 2: "機會少", 3: "一般機會", 4: "機會多", 5: "極多機會" };
-const toiletCleanlinessText = { 1: "好污糟", 2: "一般污糟", 3: "麻麻地", 4: "乾淨", 5: "超級乾淨" };
-const bossAttitudeText = { 1: "垃圾老細", 2: "好嚴格", 3: "麻麻地", 4: "Okay啦", 5: "非常好" };
-const medicalInsuranceText = { 0: "無", 1: "有" };
-const industryText = { finance: "金融", education: "教育", retail: "零售", it: "資訊科技", others: "其他" };
-const educationText = { 1: "大專", 2: "大學生", 3: "碩士", 4: "博士" };
-const uniTypeText = { 1: "大專", 2: "私大（樹仁/恒大）", 3: "八大", 4: "海歸（外國升學）" };
-
 // 用戶計數器
 let userCount = localStorage.getItem('userCount') ? parseInt(localStorage.getItem('userCount')) : 0;
 userCount++;
@@ -214,7 +202,7 @@ function calculateWorth() {
     // 評級標準（調整為更合理嘅分布）
     let resultText;
     if (worth <= 20) {
-        resultText = '社蓄生活';
+        resultText = '畜生活';
     } else if (worth <= 40) {
         resultText = '好辛苦 (😓)';
     } else if (worth <= 60) {
@@ -224,7 +212,7 @@ function calculateWorth() {
     } else if (worth <= 95) {
         resultText = '好正嘅工作 (😎)';
     } else {
-        resultText = '你上世請教過宇宙 (🤩)';
+        resultText = '你上世拯救過宇宙 (🤩)';
     }
 
     document.getElementById('result').innerText = `你嘅工作 CP 值：${worth.toFixed(1)} - ${resultText}`;
@@ -288,6 +276,18 @@ function generateReport(data) {
         worth,
         resultText
     } = data;
+
+    // 文字映射
+    const workEnvText = { 5: "甲級寫字樓", 4: "普通商業大樓/在家工作", 3: "工業大廈", 2: "工廠" };
+    const colleagueEnvText = { 1: "全部都係PK", 2: "好多 Free Rider", 3: "萍水相逢", 4: "開心工作", 5: "Friend 過夾band" };
+    const workStressText = { 1: "完全無壓力", 2: "壓力少", 3: "一般壓力", 4: "壓力大", 5: "極大壓力" };
+    const careerGrowthText = { 1: "完全無機會", 2: "機會少", 3: "一般機會", 4: "機會多", 5: "極多機會" };
+    const toiletCleanlinessText = { 1: "好污糟", 2: "一般污糟", 3: "麻麻地", 4: "乾淨", 5: "超級乾淨" };
+    const bossAttitudeText = { 1: "垃圾老細", 2: "好嚴格", 3: "麻麻地", 4: "Okay啦", 5: "非常好" };
+    const medicalInsuranceText = { 0: "無", 1: "有" };
+    const industryText = { finance: "金融", education: "教育", retail: "零售", it: "資訊科技", others: "其他" };
+    const educationText = { 1: "大專", 2: "大學生", 3: "碩士", 4: "博士" };
+    const uniTypeText = { 1: "大專", 2: "私大（樹仁/恒大）", 3: "八大", 4: "海歸（外國升學）" };
 
     // 計算市場平均薪酬
     let experienceRange;
@@ -414,7 +414,7 @@ function generateReport(data) {
 
 function shareResult() {
     const reportData = JSON.parse(localStorage.getItem('reportData'));
-    const shareUrl = `share.html?worth=${reportData.worth}&result=${encodeURIComponent(reportData.resultText)}&data=${encodeURIComponent(JSON.stringify(reportData))}`;
+    const shareUrl = `share.html?worth=${reportData.worth}&result=${encodeURIComponent(reportData.resultText)}`;
     window.open(shareUrl, '_blank');
 }
 

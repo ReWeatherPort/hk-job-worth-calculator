@@ -39,12 +39,12 @@
             <h2><i class="fas fa-info-circle"></i> 結果解釋</h2>
             <p>呢個工作 CP 值得分係基於多項因素計算，包括工作時數、通勤時間、年假、工作環境、壓力、職業發展機會等。以下係得分嘅評級標準：</p>
             <ul>
-                <li><strong>1-20 分：社蓄生活</strong> - 你嘅工作可能好辛苦，CP 值好低，建議考慮搵新機會。</li>
+                <li><strong>1-20 分：畜生活</strong> - 你嘅工作可能好辛苦，CP 值好低，建議考慮搵新機會。</li>
                 <li><strong>21-40 分：好辛苦 (😓)</strong> - 工作負擔重，報酬同付出唔成正比，可以同老細傾吓改善條件。</li>
                 <li><strong>41-60 分：正常啦 (😐)</strong> - 工作同報酬算平衡，但仲有進步空間。</li>
                 <li><strong>61-80 分：幾好 (😊)</strong> - 工作 CP 值唔錯，值得繼續努力。</li>
                 <li><strong>81-95 分：好正嘅工作 (😎)</strong> - 恭喜！你嘅工作 CP 值好高，係一個好正嘅選擇。</li>
-                <li><strong>96-100 分：你上世請教過宇宙 (🤩)</strong> - 你嘅工作係夢想級別，繼續保持！</li>
+                <li><strong>96-100 分：你上世拯救過宇宙 (🤩)</strong> - 你嘅工作係夢想級別，繼續保持！</li>
             </ul>
         </div>
         <div class="card">
@@ -54,17 +54,48 @@
         </div>
     </div>
     <script>
+        // 文字映射
+        const workEnvText = { 5: "甲級寫字樓", 4: "普通商業大樓/在家工作", 3: "工業大廈", 2: "工廠" };
+        const colleagueEnvText = { 1: "全部都係PK", 2: "好多 Free Rider", 3: "萍水相逢", 4: "開心工作", 5: "Friend 過夾band" };
+        const workStressText = { 1: "完全無壓力", 2: "壓力少", 3: "一般壓力", 4: "壓力大", 5: "極大壓力" };
+        const careerGrowthText = { 1: "完全無機會", 2: "機會少", 3: "一般機會", 4: "機會多", 5: "極多機會" };
+        const toiletCleanlinessText = { 1: "好污糟", 2: "一般污糟", 3: "麻麻地", 4: "乾淨", 5: "超級乾淨" };
+        const bossAttitudeText = { 1: "垃圾老細", 2: "好嚴格", 3: "麻麻地", 4: "Okay啦", 5: "非常好" };
+        const medicalInsuranceText = { 0: "無", 1: "有" };
+        const industryText = { finance: "金融", education: "教育", retail: "零售", it: "資訊科技", others: "其他" };
+        const educationText = { 1: "大專", 2: "大學生", 3: "碩士", 4: "博士" };
+        const uniTypeText = { 1: "大專", 2: "私大（樹仁/恒大）", 3: "八大", 4: "海歸（外國升學）" };
+
+        // 香港平均數據（模擬 API 數據）
+        const hkStats = {
+            avgHoursPerDay: 8.7,
+            avgStressLevel: 3.2,
+            avgAnnualLeave: 10,
+            avgCommuteTime: 0.8,
+            avgTransportCost: 30
+        };
+
+        // 從 URL 獲取 worth 同 result
         const urlParams = new URLSearchParams(window.location.search);
         const worth = parseFloat(urlParams.get('worth')).toFixed(1);
         const result = decodeURIComponent(urlParams.get('result'));
-        const reportData = JSON.parse(decodeURIComponent(urlParams.get('data')));
+
+        // 從 localStorage 獲取報告數據
+        const reportData = JSON.parse(localStorage.getItem('reportData'));
+
+        // 檢查報告數據是否存在
+        if (!reportData) {
+            document.getElementById('user-report').innerHTML = '<p>未能載入報告數據，請返回主頁重新評估！</p>';
+            document.getElementById('comparison-report').innerHTML = '<p>未能載入比較數據，請返回主頁重新評估！</p>';
+            return;
+        }
 
         document.getElementById('worth').innerText = worth;
         document.getElementById('result').innerText = result;
 
         let description = '';
         if (worth <= 20) {
-            description = '你嘅工作 CP 值好低，可能係一個「社蓄生活」。建議你重新審視工作條件，或者考慮搵新機會！';
+            description = '你嘅工作 CP 值好低，可能係一個「畜生活」。建議你重新審視工作條件，或者考慮搵新機會！';
         } else if (worth <= 40) {
             description = '你嘅工作好辛苦，報酬同付出唔成正比。試吓同老細傾改善條件，或者搵新嘅發展機會！';
         } else if (worth <= 60) {
@@ -77,15 +108,6 @@
             description = '你嘅工作 CP 值係夢想級別，簡直係完美！繼續享受你嘅工作，同時分享你嘅經驗畀其他人！';
         }
         document.getElementById('result-description').innerText = description;
-
-        // 香港平均數據（模擬 API 數據）
-        const hkStats = {
-            avgHoursPerDay: 8.7,
-            avgStressLevel: 3.2,
-            avgAnnualLeave: 10,
-            avgCommuteTime: 0.8,
-            avgTransportCost: 30
-        };
 
         // 顯示用戶報告（過濾薪酬資料）
         const userReport = `
@@ -162,7 +184,7 @@
             const text = encodeURIComponent(`我嘅工作 CP 值係 ${worth} 分 - ${result}！快啲試吓你嘅工作點樣！`);
             let shareUrl;
             if (platform === 'facebook') {
-                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}"e=${text}`;
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
             } else if (platform === 'twitter') {
                 shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
             }
