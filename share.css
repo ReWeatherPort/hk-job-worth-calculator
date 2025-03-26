@@ -188,3 +188,208 @@ header p {
 .card button i {
     margin-right: 0.3em;
 }
+
+/* 確保比較報告表格嘅樣式一致 */
+#comparison-report table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+#comparison-report th, #comparison-report td {
+    padding: 0.8em;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+#comparison-report th {
+    background-color: #333;
+    font-weight: 500;
+    color: #ddd;
+}
+
+#comparison-report td {
+    color: #ddd;
+}
+
+#comparison-report td i {
+    margin-right: 0.3em;
+    color: #3498db;
+}
+
+/* 用戶報告表格樣式 */
+#user-report table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+#user-report th, #user-report td {
+    padding: 0.8em;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+#user-report th {
+    background-color: #333;
+    font-weight: 500;
+    color: #ddd;
+}
+
+#user-report td {
+    color: #ddd;
+}
+
+#user-report td i {
+    margin-right: 0.3em;
+    color: #3498db;
+}
+
+/* 確保列表項目有適當間距 */
+.card ul li {
+    margin-bottom: 0.5em;
+}
+
+/* 調整卡片內部元素嘅間距 */
+.card p, .card ul, .card table {
+    margin-bottom: 1em;
+}
+
+/* 確保按鈕喺卡片內居中 */
+.card button {
+    display: block;
+    margin: 0 auto;
+}
+
+/* 響應式設計：喺小屏幕上調整佈局 */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    header p {
+        font-size: 1em;
+    }
+
+    .container {
+        margin: 1em auto;
+        padding: 0 0.5em;
+    }
+
+    .card {
+        padding: 1.5em;
+    }
+
+    .result-card h2 {
+        font-size: 1.5em;
+    }
+
+    .score-circle {
+        width: 120px;
+        height: 120px;
+        font-size: 1.8em;
+    }
+
+    .result-card h3 {
+        font-size: 1.3em;
+    }
+
+    .result-description {
+        font-size: 1em;
+    }
+
+    .share-buttons button {
+        padding: 0.6em 1.2em;
+        font-size: 0.9em;
+    }
+
+    .card h2 {
+        font-size: 1.5em;
+    }
+
+    .card table th, .card table td {
+        padding: 0.6em;
+        font-size: 0.9em;
+    }
+
+    .card button {
+        padding: 0.6em 1.2em;
+        font-size: 0.9em;
+    }
+}
+
+/* 動畫效果：頁面載入時淡入 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* 確保卡片之間嘅間距喺小屏幕上唔會過大 */
+@media (max-width: 600px) {
+    .card {
+        margin-bottom: 1em;
+    }
+}
+
+/* 調整按鈕喺小屏幕上嘅間距 */
+@media (max-width: 600px) {
+    .share-buttons {
+        gap: 0.5em;
+    }
+}
+
+/* 確保表格喺小屏幕上可以橫向滾動 */
+@media (max-width: 600px) {
+    .card table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* 調整字體大小以適應不同屏幕 */
+@media (max-width: 400px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    header p {
+        font-size: 0.9em;
+    }
+
+    .result-card h2 {
+        font-size: 1.3em;
+    }
+
+    .score-circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.5em;
+    }
+
+    .result-card h3 {
+        font-size: 1.2em;
+    }
+
+    .result-description {
+        font-size: 0.9em;
+    }
+
+    .card h2 {
+        font-size: 1.3em;
+    }
+
+    .card p, .card ul li {
+        font-size: 0.9em;
+    }
+}
