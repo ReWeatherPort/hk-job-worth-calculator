@@ -214,7 +214,7 @@ function calculateWorth() {
     // 評級標準（調整為更合理嘅分布）
     let resultText;
     if (worth <= 20) {
-        resultText = '畜生活';
+        resultText = '社畜生活';
     } else if (worth <= 40) {
         resultText = '好辛苦 (😓)';
     } else if (worth <= 60) {
