@@ -18,6 +18,7 @@ header h1 {
     margin: 0;
     font-size: 2.2em;
     font-weight: 700;
+    color: #66b0ff; /* 藍色標題 */
 }
 
 header h1 i {
@@ -136,6 +137,33 @@ header p {
 
 .card ul {
     color: #ddd;
+}
+
+.card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+.card th, .card td {
+    padding: 0.8em;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+.card th {
+    background-color: #333;
+    font-weight: 500;
+    color: #ddd;
+}
+
+.card td {
+    color: #ddd;
+}
+
+.card td i {
+    margin-right: 0.3em;
+    color: #3498db;
 }
 
 .card button {

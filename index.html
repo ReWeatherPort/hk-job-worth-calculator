@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社蓄的自我評價 v1.1</title>
+    <title>社蓄的自我評價 v1.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dark-mode">
     <header>
-        <h1><i class="fas fa-briefcase"></i> 社蓄的自我評價 v1.1</h1>
-        <p>幫你評估你嘅工作性價比</p>
+        <h1><i class="fas fa-briefcase"></i> 社蓄的自我評價 v1.2</h1>
+        <p>幫你評估你嘅工作 CP 值</p>
         <button id="theme-toggle"><i class="fas fa-sun"></i> 切換明亮模式</button>
         <div class="developer-info">
             開發者：ReWeatherPort
@@ -101,23 +101,27 @@
                 <label><i class="fas fa-toilet"></i> 公司廁所清潔度：</label>
                 <div id="toiletCleanliness" class="button-group">
                     <button class="option" data-value="1">好污糟</button>
-                    <button class="option active" data-value="2">一般</button>
-                    <button class="option" data-value="3">好乾淨</button>
+                    <button class="option" data-value="2">一般污糟</button>
+                    <button class="option active" data-value="3">麻麻地</button>
+                    <button class="option" data-value="4">乾淨</button>
+                    <button class="option" data-value="5">超級乾淨</button>
                 </div>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-user-tie"></i> 老細態度：</label>
                 <div id="bossAttitude" class="button-group">
-                    <button class="option" data-value="1">好差</button>
-                    <button class="option active" data-value="2">一般</button>
-                    <button class="option" data-value="3">好好</button>
+                    <button class="option" data-value="1">垃圾老細</button>
+                    <button class="option" data-value="2">好嚴格</button>
+                    <button class="option active" data-value="3">麻麻地</button>
+                    <button class="option" data-value="4">Okay啦</button>
+                    <button class="option" data-value="5">非常好</button>
                 </div>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-heartbeat"></i> 有無醫療保險：</label>
                 <div id="medicalInsurance" class="button-group">
-                    <button class="option active" data-value="0">無</button>
                     <button class="option" data-value="1">有</button>
+                    <button class="option active" data-value="0">無</button>
                 </div>
             </div>
             <div class="form-group">
