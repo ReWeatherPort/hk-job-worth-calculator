@@ -1,8 +1,15 @@
 # 社蓄的自我評價 (HK Job Worth Calculator)
 
+<<<<<<< HEAD
 ![Dark Mode Screenshot](https://via.placeholder.com/800x400.png?text=Dark+Mode+Screenshot)  
 *應用程式喺暗黑模式下嘅截圖（可稍後替換為真實截圖）*
 
+=======
+![image](https://github.com/user-attachments/assets/8da3ebc2-47a8-44a2-ab05-51241755d9d7)
+
+*應用程式喺暗黑模式下嘅截圖（可稍後替換為真實截圖）*
+
+>>>>>>> 32f502fafc8494c43e338451df7a58a7273a181b
 ## 項目概述
 
 「社蓄的自我評價」係一個簡單易用嘅網頁應用程式，專為香港打工仔設計，幫你評估你嘅工作性價比。透過輸入你嘅薪酬、工作時數、通勤時間、年假、工作環境等多項資料，應用程式會計算你嘅工作得分，並同香港市場平均數據進行比較，畀你一個客觀嘅評估。
@@ -54,4 +61,8 @@
 1. **Clone 倉庫**：
    ```bash
    git clone https://github.com/ReWeatherPort/hk-job-worth-calculator.git
+<<<<<<< HEAD
    cd hk-job-worth-calculator
+=======
+   cd hk-job-worth-calculator
+>>>>>>> 32f502fafc8494c43e338451df7a58a7273a181b
