@@ -69,15 +69,14 @@
 
         // 從 URL 獲取得分同評級
         const urlParams = new URLSearchParams(window.location.search);
-        const worth = parseFloat(urlParams.get('worth'));
+        const worthFromUrl = parseFloat(urlParams.get('worth'));
         const resultText = decodeURIComponent(urlParams.get('result'));
-
-        // 顯示得分同評級
-        document.getElementById('score-circle').innerText = worth.toFixed(1);
-        document.getElementById('result-text').innerText = resultText;
 
         // 從 localStorage 獲取報告數據
         const reportData = JSON.parse(localStorage.getItem('reportData'));
+        let worthCalc;
+        let scoreBreakdown = [];
+
         if (reportData) {
             const {
                 monthlySalary,
@@ -115,7 +114,7 @@
 
             // 計算各個因子
             const baseScore = (netSalaryPerDay / totalCostPerDay) * 0.5;
-            let worthCalc = baseScore;
+            worthCalc = baseScore;
 
             const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
             const hoursFactor = 1 - hoursPenalty * 0.3;
@@ -196,8 +195,11 @@
             worthCalc *= marketFactor;
             const marketScore = worthCalc - preMarketWorth;
 
+            // 確保得分喺 1 到 100 之間
+            worthCalc = Math.max(1, Math.min(100, worthCalc));
+
             // 得分細分
-            const scoreBreakdown = [
+            scoreBreakdown = [
                 { name: '基礎得分（每日淨薪水/總成本）', score: baseScore, weight: 25 },
                 { name: '工時影響', score: hoursScore + healthScore, weight: 10 },
                 { name: '食飯時間', score: lunchTimeScore, weight: 5 },
@@ -235,6 +237,10 @@
             if (!advice) {
                 advice = '你嘅工作整體唔錯，繼續保持！';
             }
+
+            // 顯示得分同評級（使用 worthCalc 而唔係 worthFromUrl）
+            document.getElementById('score-circle').innerText = worthCalc.toFixed(1);
+            document.getElementById('result-text').innerText = resultText;
 
             // 顯示得分細分同分析
             document.getElementById('result-details').innerHTML = `
@@ -337,6 +343,9 @@
             `;
             document.getElementById('comparison-report-content').innerHTML = comparisonReportHTML;
         } else {
+            worthCalc = worthFromUrl; // Fallback to URL value if no reportData
+            document.getElementById('score-circle').innerText = worthCalc.toFixed(1);
+            document.getElementById('result-text').innerText = resultText;
             document.getElementById('user-report-content').innerHTML = '<p>無法載入報告數據，請返回主頁重新評測。</p>';
             document.getElementById('comparison-report-content').innerHTML = '<p>無法載入報告數據，請返回主頁重新評測。</p>';
             document.getElementById('result-details').innerHTML = '<p>無法載入得分細分數據，請返回主頁重新評測。</p>';
@@ -344,7 +353,7 @@
 
         // 分享功能
         function shareToWhatsApp() {
-            const text = `我嘅工作 CP 值係 ${worth.toFixed(1)} - ${resultText}！快啲試下你嘅工作 CP 值啦！`;
+            const text = `我嘅工作 CP 值係 ${worthCalc.toFixed(1)} - ${resultText}！快啲試下你嘅工作 CP 值啦！`;
             const url = window.location.href;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
         }
