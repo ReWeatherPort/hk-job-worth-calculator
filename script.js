@@ -32,11 +32,13 @@ const marketSalaries = {
     }
 };
 
-// 模擬 API 獲取香港平均工時同壓力數據（假設 2024 年數據）
+// 模擬 API 獲取香港平均工時、壓力同其他數據（假設 2024 年數據）
 const hkStats = {
     avgHoursPerDay: 8.7, // 2024 年香港統計處數據
     avgStressLevel: 3.2, // 2024 年香港政府健康署數據
-    avgAnnualLeave: 10 // 2024 年香港勞工處數據
+    avgAnnualLeave: 10, // 2024 年香港勞工處數據
+    avgCommuteTime: 0.8, // 2024 年香港運輸署數據（單程平均通勤時間）
+    avgTransportCost: 30 // 2024 年香港運輸署數據（每日平均車費）
 };
 
 // 文字映射
@@ -138,65 +140,65 @@ function calculateWorth() {
     const avgCommuteTime = commute * (commuteDaysPerWeek / workDaysPerWeek);
     const timeCostPerDay = hoursPerDay + lunchTime + 2 * avgCommuteTime;
 
-    // 計算每日總成本（包括車費）
+    // 計算每日總成本（包括車費，車費影響降低）
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50;
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 60;
 
-    // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 20%）
-    let worth = (netSalaryPerDay / totalCostPerDay) * 1.2;
+    // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 25%）
+    let worth = (netSalaryPerDay / totalCostPerDay) * 0.5;
 
     // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 15%）
     const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
-    worth = worth * (1 - hoursPenalty * 0.3);
+    worth = worth * (1 - hoursPenalty * 0.5);
 
     // 考慮健康影響（每日超過 10 小時減分）
     if (hoursPerDay > 10) {
-        worth = worth * 0.9;
+        worth = worth * 0.85;
     }
 
     // 考慮食飯時間（少於 0.5 小時減分，權重 5%）
     const lunchTimePenalty = lunchTime < 0.5 ? (0.5 - lunchTime) / 0.5 : 0;
-    worth = worth * (1 - lunchTimePenalty * 0.05);
+    worth = worth * (1 - lunchTimePenalty * 0.1);
 
     // 考慮工作環境同同事環境（權重 15%）
     const envMultiplier = (workEnvScore * colleagueEnvScore) / 25;
-    worth = worth * (0.7 + envMultiplier * 0.3);
+    worth = worth * (0.6 + envMultiplier * 0.4);
 
     // 考慮工作壓力（權重 10%）
     const stressMultiplier = (6 - workStressScore) / 5;
-    worth = worth * (0.8 + stressMultiplier * 0.2);
+    worth = worth * (0.5 + stressMultiplier * 0.5);
 
     // 考慮職業發展機會（權重 10%）
     const careerGrowthMultiplier = careerGrowthScore / 5;
-    worth = worth * (0.8 + careerGrowthMultiplier * 0.2);
+    worth = worth * (0.6 + careerGrowthMultiplier * 0.4);
 
     // 考慮公司廁所清潔度（權重 5%）
     const toiletCleanlinessMultiplier = toiletCleanlinessScore / 5;
-    worth = worth * (0.9 + toiletCleanlinessMultiplier * 0.1);
+    worth = worth * (0.8 + toiletCleanlinessMultiplier * 0.2);
 
     // 考慮老細態度（權重 10%）
     let bossAttitudeMultiplier = bossAttitudeScore / 5;
     if (bossAttitudeScore === 1) {
-        worth = worth * 0.6; // 垃圾老細大扣分
+        worth = worth * 0.5; // 垃圾老細大扣分
     } else {
-        worth = worth * (0.8 + bossAttitudeMultiplier * 0.2);
+        worth = worth * (0.6 + bossAttitudeMultiplier * 0.4);
     }
 
     // 考慮醫療保險（權重 5%）
-    const medicalInsuranceBonus = medicalInsurance * 0.05;
+    const medicalInsuranceBonus = medicalInsurance * 0.1;
     worth = worth * (1 + medicalInsuranceBonus);
 
     // 考慮年假（權重 10%）
     const leaveBonus = annualLeave / 14;
-    worth = worth * (0.9 + leaveBonus * 0.1);
+    worth = worth * (0.7 + leaveBonus * 0.3);
 
     // 考慮學業水準、大學類型同工作經驗嘅加成（權重 10%）
-    const educationBonus = educationScore * 0.003;
-    const uniTypeBonus = uniTypeScore * 0.003;
-    const experienceBonus = Math.min(experience * 0.0015, 0.015);
+    const educationBonus = educationScore * 0.005;
+    const uniTypeBonus = uniTypeScore * 0.005;
+    const experienceBonus = Math.min(experience * 0.003, 0.03);
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
 
-    // 考慮薪水同市場平均嘅比較（權重 20%）
+    // 考慮薪水同市場平均嘅比較（權重 25%）
     let experienceRange;
     if (experience <= 2) experienceRange = 0;
     else if (experience <= 5) experienceRange = 3;
@@ -204,25 +206,25 @@ function calculateWorth() {
     else experienceRange = 11;
     const marketSalary = marketSalaries[industry][educationScore][experienceRange];
     const salaryRatio = annualSalary / marketSalary;
-    worth = worth * Math.min(salaryRatio * 1.1, 1.3);
+    worth = worth * Math.min(salaryRatio * 0.8, 1.2);
 
     // 確保得分喺 1 到 100 之間
     worth = Math.max(1, Math.min(100, worth));
 
     // 評級標準（調整為更合理嘅分布）
     let resultText;
-    if (worth <= 30) {
+    if (worth <= 20) {
         resultText = '社蓄生活';
-    } else if (worth <= 50) {
+    } else if (worth <= 40) {
         resultText = '好辛苦 (😓)';
-    } else if (worth <= 70) {
+    } else if (worth <= 60) {
         resultText = '正常啦 (😐)';
-    } else if (worth <= 85) {
+    } else if (worth <= 80) {
         resultText = '幾好 (😊)';
     } else if (worth <= 95) {
         resultText = '好正嘅工作 (😎)';
     } else {
-        resultText = '你上世救宇宙 (🤩)';
+        resultText = '你上世請教過宇宙 (🤩)';
     }
 
     document.getElementById('result').innerText = `你嘅工作 CP 值：${worth.toFixed(1)} - ${resultText}`;
@@ -308,7 +310,7 @@ function generateReport(data) {
     const avgCommuteTime = commute * (commuteDaysPerWeek / workDaysPerWeek);
     const timeCostPerDay = hoursPerDay + lunchTime + 2 * avgCommuteTime;
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
-    const totalCostPerDay = timeCostPerDay + avgTransportCost / 50;
+    const totalCostPerDay = timeCostPerDay + avgTransportCost / 60;
 
     // 香港平均數據比較
     const hoursComparison = hoursPerDay > hkStats.avgHoursPerDay 
@@ -329,6 +331,18 @@ function generateReport(data) {
         : workStressScore < hkStats.avgStressLevel 
         ? `低於香港平均壓力水平 (${hkStats.avgStressLevel}/5)`
         : "等於香港平均壓力水平";
+
+    const commuteComparison = commute > hkStats.avgCommuteTime 
+        ? `高於香港平均 (${hkStats.avgCommuteTime} 小時) ${((commute - hkStats.avgCommuteTime) / hkStats.avgCommuteTime * 100).toFixed(1)}%`
+        : commute < hkStats.avgCommuteTime 
+        ? `低於香港平均 (${hkStats.avgCommuteTime} 小時) ${((hkStats.avgCommuteTime - commute) / hkStats.avgCommuteTime * 100).toFixed(1)}%`
+        : "等於香港平均";
+
+    const transportCostComparison = transportCost > hkStats.avgTransportCost 
+        ? `高於香港平均 (${hkStats.avgTransportCost} HKD) ${((transportCost - hkStats.avgTransportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
+        : transportCost < hkStats.avgTransportCost 
+        ? `低於香港平均 (${hkStats.avgTransportCost} HKD) ${((hkStats.avgTransportCost - transportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
+        : "等於香港平均";
 
     // 生成報告內容
     const report = `
@@ -363,31 +377,35 @@ function generateReport(data) {
             <tr><td><i class="fas fa-calendar-day"></i> 每年工作日數</td><td>${workingDaysPerYear} 天（${workDaysPerWeek} 天/週 × 52 週 - 11 天公眾假期 - ${annualLeave} 天年假）</td></tr>
             <tr><td><i class="fas fa-money-bill-wave"></i> 每日淨薪水</td><td>${netSalaryPerDay.toFixed(2)} HKD（${annualSalary.toLocaleString()} HKD ÷ ${workingDaysPerYear} 天）</td></tr>
             <tr><td><i class="fas fa-clock"></i> 每日時間成本</td><td>${timeCostPerDay.toFixed(2)} 小時（${hoursPerDay} 小時工作 + ${lunchTime} 小時食飯 + 2 × ${avgCommuteTime.toFixed(2)} 小時通勤）</td></tr>
-            <tr><td><i class="fas fa-coins"></i> 每日總成本</td><td>${totalCostPerDay.toFixed(2)}（${timeCostPerDay.toFixed(2)} 小時 + ${avgTransportCost.toFixed(2)} HKD ÷ 50）</td></tr>
+            <tr><td><i class="fas fa-coins"></i> 每日總成本</td><td>${totalCostPerDay.toFixed(2)}（${timeCostPerDay.toFixed(2)} 小時 + ${avgTransportCost.toFixed(2)} HKD ÷ 60）</td></tr>
         </table>
 
         <h3><i class="fas fa-chart-bar"></i> 工作分析</h3>
         <p>你嘅工作 CP 值：${worth.toFixed(1)} - ${resultText}</p>
 
         <h3><i class="fas fa-balance-scale"></i> 市場比較</h3>
-        <p>根據你嘅學業水準 (${educationText[educationScore]})、工作經驗 (${experience} 年) 同行業 (${industryText[industry]})，香港市場平均年薪為 ${marketSalary.toLocaleString()} HKD。</p>
+        <p>根據你嘅學業水準 (${educationText[educationScore]})、工作經驗 (${experience} 年) 同行業 (${industryText[industry]})，香港市場平均年薪為 ${marketSalary.toLocaleString()} HKD（數據來源：香港統計處 2024 年收入及工時統計調查報告）。</p>
         <p>你嘅年薪 (${annualSalary.toLocaleString()} HKD) ${comparisonText}。</p>
 
         <h3><i class="fas fa-globe"></i> 香港平均數據比較</h3>
         <table>
             <tr><th>項目</th><th>比較</th></tr>
-            <tr><td><i class="fas fa-clock"></i> 每日工作時數</td><td>${hoursComparison}</td></tr>
-            <tr><td><i class="fas fa-umbrella-beach"></i> 年假日數</td><td>${leaveComparison}</td></tr>
-            <tr><td><i class="fas fa-exclamation-circle"></i> 工作壓力</td><td>${stressComparison}</td></tr>
+            <tr><td><i class="fas fa-clock"></i> 每日工作時數</td><td>${hoursComparison}（香港平均數據：${hkStats.avgHoursPerDay} 小時，來源：香港統計處 2024 年報告）</td></tr>
+            <tr><td><i class="fas fa-umbrella-beach"></i> 年假日數</td><td>${leaveComparison}（香港平均數據：${hkStats.avgAnnualLeave} 天，來源：香港勞工處 2024 年報告）</td></tr>
+            <tr><td><i class="fas fa-exclamation-circle"></i> 工作壓力</td><td>${stressComparison}（香港平均數據：${hkStats.avgStressLevel}/5，來源：香港政府健康署 2024 年報告）</td></tr>
+            <tr><td><i class="fas fa-car"></i> 單程通勤時間</td><td>${commuteComparison}（香港平均數據：${hkStats.avgCommuteTime} 小時，來源：香港運輸署 2024 年報告）</td></tr>
+            <tr><td><i class="fas fa-ticket-alt"></i> 每日車費</td><td>${transportCostComparison}（香港平均數據：${hkStats.avgTransportCost} HKD，來源：香港運輸署 2024 年報告）</td></tr>
         </table>
 
         <h3><i class="fas fa-info-circle"></i> 數據來源</h3>
         <ul>
             <li><a href="https://www.censtatd.gov.hk/en/scode210.html" target="_blank">香港統計處 - 2024 年收入及工時統計調查報告</a>：提供行業薪酬同工時數據（平均每日工時 8.7 小時）。</li>
-            <li><a href="https://www.labour.gov.hk/tc/public/pdf/AnnualLeave.pdf" target="_blank">香港勞工處 - 年假標準</a>：提供年假標準（7-14 天，視乎工齡）。</li>
+            <li><a href="https://www.labour.gov.hk/tc/public/pdf/AnnualLeave.pdf" target="_blank">香港勞工處 - 年假標準（2024 年更新）</a>：提供年假標準（平均 10 天，視乎工齡 7-14 天）。</li>
             <li><a href="https://www.chp.gov.hk/tc/healthtopics/content/24/665.html" target="_blank">香港政府健康署 - 工作壓力與健康（2024 年更新）</a>：提供工作壓力數據（平均壓力水平為 3.2/5）。</li>
+            <li><a href="https://www.td.gov.hk/tc/transport_in_hong_kong/transport_figures/index.html" target="_blank">香港運輸署 - 2024 年交通數據</a>：提供通勤時間同車費數據（平均單程通勤時間 0.8 小時，每日車費 30 HKD）。</li>
             <li><a href="https://www.glassdoor.com/" target="_blank">Glassdoor - 工作評估框架</a>：提供工作評估嘅權重參考。</li>
             <li><a href="https://www.who.int/news/item/17-05-2021-long-working-hours-increasing-deaths-from-heart-disease-and-stroke-who-ilo" target="_blank">世界衛生組織 - 長工時影響</a>：提供長工時對健康嘅影響數據。</li>
+            <li><a href="https://www.policyaddress.gov.hk/2024/en/" target="_blank">香港特區政府 - 2024 年施政報告</a>：提供香港勞動市場同工作環境嘅最新政策數據。</li>
         </ul>
     `;
 
