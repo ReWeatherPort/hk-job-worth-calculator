@@ -37,7 +37,7 @@
         </div>
     </div>
     <script>
-        // 香港市場平均數據（同 script.js 一致）
+        // 香港市場平均數據
         const hkStats = {
             avgHoursPerDay: 8.7,
             avgStressLevel: 3.2,
@@ -46,7 +46,7 @@
             avgTransportCost: 30
         };
 
-        // 文字映射（同 script.js 一致）
+        // 文字映射
         const workEnvText = { 5: "甲級寫字樓", 4: "普通商業大樓/在家工作", 3: "工業大廈", 2: "工廠" };
         const colleagueEnvText = { 1: "全部都係PK", 2: "好多 Free Rider", 3: "萍水相逢", 4: "開心工作", 5: "Friend 過夾band" };
         const workStressText = { 1: "完全無壓力", 2: "壓力少", 3: "一般壓力", 4: "壓力大", 5: "極大壓力" };
@@ -105,86 +105,93 @@
             const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
             const totalCostPerDay = timeCostPerDay + avgTransportCost / 60;
 
-            // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 25%）
-            let worthCalc = (netSalaryPerDay / totalCostPerDay) * 0.5;
-            const baseScore = worthCalc;
+            // 計算各個因子
+            const baseScore = (netSalaryPerDay / totalCostPerDay) * 0.5;
+            let worthCalc = baseScore;
 
-            // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 10%）
             const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
-            worthCalc = worthCalc * (1 - hoursPenalty * 0.3);
-            const hoursScore = worthCalc - baseScore;
+            const hoursFactor = 1 - hoursPenalty * 0.3;
+            const preHoursWorth = worthCalc;
+            worthCalc *= hoursFactor;
+            const hoursScore = worthCalc - preHoursWorth;
 
-            // 考慮健康影響（每日超過 10 小時減分）
-            if (hoursPerDay > 10) {
-                worthCalc = worthCalc * 0.9;
-            }
+            const healthFactor = hoursPerDay > 10 ? 0.9 : 1;
+            const preHealthWorth = worthCalc;
+            worthCalc *= healthFactor;
+            const healthScore = worthCalc - preHealthWorth;
 
-            // 考慮食飯時間（少於 0.5 小時減分，權重 5%）
             const lunchTimePenalty = lunchTime < 0.5 ? (0.5 - lunchTime) / 0.5 : 0;
-            worthCalc = worthCalc * (1 - lunchTimePenalty * 0.1);
-            const lunchTimeScore = worthCalc - baseScore - hoursScore;
+            const lunchTimeFactor = 1 - lunchTimePenalty * 0.1;
+            const preLunchTimeWorth = worthCalc;
+            worthCalc *= lunchTimeFactor;
+            const lunchTimeScore = worthCalc - preLunchTimeWorth;
 
-            // 考慮工作環境同同事環境（權重 15%）
             const envMultiplier = (workEnvScore * colleagueEnvScore) / 25;
-            worthCalc = worthCalc * (0.6 + envMultiplier * 0.4);
-            const envScore = worthCalc - baseScore - hoursScore - lunchTimeScore;
+            const envFactor = 0.6 + envMultiplier * 0.4;
+            const preEnvWorth = worthCalc;
+            worthCalc *= envFactor;
+            const envScore = worthCalc - preEnvWorth;
 
-            // 考慮工作壓力（權重 10%）
             const stressMultiplier = (6 - workStressScore) / 5;
-            worthCalc = worthCalc * (0.5 + stressMultiplier * 0.5);
-            const stressScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore;
+            const stressFactor = 0.5 + stressMultiplier * 0.5;
+            const preStressWorth = worthCalc;
+            worthCalc *= stressFactor;
+            const stressScore = worthCalc - preStressWorth;
 
-            // 考慮職業發展機會（權重 10%）
             const careerGrowthMultiplier = careerGrowthScore / 5;
-            worthCalc = worthCalc * (0.6 + careerGrowthMultiplier * 0.4);
-            const careerScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore;
+            const careerFactor = 0.6 + careerGrowthMultiplier * 0.4;
+            const preCareerWorth = worthCalc;
+            worthCalc *= careerFactor;
+            const careerScore = worthCalc - preCareerWorth;
 
-            // 考慮公司廁所清潔度（權重 5%）
             const toiletCleanlinessMultiplier = toiletCleanlinessScore / 5;
-            worthCalc = worthCalc * (0.8 + toiletCleanlinessMultiplier * 0.2);
-            const toiletScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore;
+            const toiletFactor = 0.8 + toiletCleanlinessMultiplier * 0.2;
+            const preToiletWorth = worthCalc;
+            worthCalc *= toiletFactor;
+            const toiletScore = worthCalc - preToiletWorth;
 
-            // 考慮老細態度（權重 10%）
-            let bossAttitudeMultiplier = bossAttitudeScore / 5;
+            const bossAttitudeMultiplier = bossAttitudeScore / 5;
+            const bossFactor = bossAttitudeScore === 1 ? 0.5 : (0.6 + bossAttitudeMultiplier * 0.4);
             const preBossWorth = worthCalc;
-            if (bossAttitudeScore === 1) {
-                worthCalc = worthCalc * 0.5;
-            } else {
-                worthCalc = worthCalc * (0.6 + bossAttitudeMultiplier * 0.4);
-            }
+            worthCalc *= bossFactor;
             const bossScore = worthCalc - preBossWorth;
 
-            // 考慮醫療保險（權重 5%）
             const medicalInsuranceBonus = medicalInsurance * 0.1;
-            worthCalc = worthCalc * (1 + medicalInsuranceBonus);
-            const medicalScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore;
+            const medicalFactor = 1 + medicalInsuranceBonus;
+            const preMedicalWorth = worthCalc;
+            worthCalc *= medicalFactor;
+            const medicalScore = worthCalc - preMedicalWorth;
 
-            // 考慮有冇OT補水（權重 5%）
             const otCompensationBonus = otCompensation * 0.1;
-            worthCalc = worthCalc * (1 + otCompensationBonus);
-            const otScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore;
+            const otFactor = 1 + otCompensationBonus;
+            const preOtWorth = worthCalc;
+            worthCalc *= otFactor;
+            const otScore = worthCalc - preOtWorth;
 
-            // 考慮年假（權重 10%）
             const leaveBonus = annualLeave / 14;
-            worthCalc = worthCalc * (0.7 + leaveBonus * 0.3);
-            const leaveScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore;
+            const leaveFactor = 0.7 + leaveBonus * 0.3;
+            const preLeaveWorth = worthCalc;
+            worthCalc *= leaveFactor;
+            const leaveScore = worthCalc - preLeaveWorth;
 
-            // 考慮學業水準、大學類型同工作經驗嘅加成（權重 10%）
             const educationBonus = educationScore * 0.005;
             const uniTypeBonus = uniTypeScore * 0.005;
             const experienceBonus = Math.min(experience * 0.003, 0.03);
-            worthCalc = worthCalc * (1 + educationBonus + uniTypeBonus + experienceBonus);
-            const educationExperienceScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore;
+            const educationExperienceFactor = 1 + educationBonus + uniTypeBonus + experienceBonus;
+            const preEducationExperienceWorth = worthCalc;
+            worthCalc *= educationExperienceFactor;
+            const educationExperienceScore = worthCalc - preEducationExperienceWorth;
 
-            // 考慮薪水同市場平均嘅比較（權重 25%）
             const salaryRatio = annualSalary / marketSalary;
-            worthCalc = worthCalc * Math.min(salaryRatio * 0.8, 1.2);
-            const marketScore = worthCalc - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore - educationExperienceScore;
+            const marketFactor = Math.min(salaryRatio * 0.8, 1.2);
+            const preMarketWorth = worthCalc;
+            worthCalc *= marketFactor;
+            const marketScore = worthCalc - preMarketWorth;
 
             // 得分細分
             const scoreBreakdown = [
                 { name: '基礎得分（每日淨薪水/總成本）', score: baseScore, weight: 25 },
-                { name: '工時影響', score: hoursScore, weight: 10 },
+                { name: '工時影響', score: hoursScore + healthScore, weight: 10 },
                 { name: '食飯時間', score: lunchTimeScore, weight: 5 },
                 { name: '工作環境同同事環境', score: envScore, weight: 15 },
                 { name: '工作壓力', score: stressScore, weight: 10 },

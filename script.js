@@ -142,78 +142,84 @@ function calculateWorth() {
     const avgTransportCost = transportCost * (commuteDaysPerWeek / workDaysPerWeek);
     const totalCostPerDay = timeCostPerDay + avgTransportCost / 60;
 
-    // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 25%）
-    let worth = (netSalaryPerDay / totalCostPerDay) * 0.5;
-    const baseScore = worth;
+    // 計算基礎得分
+    const baseScore = (netSalaryPerDay / totalCostPerDay) * 0.5;
+    let worth = baseScore;
 
-    // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 10%）
+    // 計算各個因子
     const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
-    worth = worth * (1 - hoursPenalty * 0.3);
-    const hoursScore = worth - baseScore;
+    const hoursFactor = 1 - hoursPenalty * 0.3;
+    const preHoursWorth = worth;
+    worth *= hoursFactor;
+    const hoursScore = worth - preHoursWorth;
 
-    // 考慮健康影響（每日超過 10 小時減分）
-    if (hoursPerDay > 10) {
-        worth = worth * 0.9;
-    }
+    const healthFactor = hoursPerDay > 10 ? 0.9 : 1;
+    const preHealthWorth = worth;
+    worth *= healthFactor;
+    const healthScore = worth - preHealthWorth;
 
-    // 考慮食飯時間（少於 0.5 小時減分，權重 5%）
     const lunchTimePenalty = lunchTime < 0.5 ? (0.5 - lunchTime) / 0.5 : 0;
-    worth = worth * (1 - lunchTimePenalty * 0.1);
-    const lunchTimeScore = worth - baseScore - hoursScore;
+    const lunchTimeFactor = 1 - lunchTimePenalty * 0.1;
+    const preLunchTimeWorth = worth;
+    worth *= lunchTimeFactor;
+    const lunchTimeScore = worth - preLunchTimeWorth;
 
-    // 考慮工作環境同同事環境（權重 15%）
     const envMultiplier = (workEnvScore * colleagueEnvScore) / 25;
-    worth = worth * (0.6 + envMultiplier * 0.4);
-    const envScore = worth - baseScore - hoursScore - lunchTimeScore;
+    const envFactor = 0.6 + envMultiplier * 0.4;
+    const preEnvWorth = worth;
+    worth *= envFactor;
+    const envScore = worth - preEnvWorth;
 
-    // 考慮工作壓力（權重 10%）
     const stressMultiplier = (6 - workStressScore) / 5;
-    worth = worth * (0.5 + stressMultiplier * 0.5);
-    const stressScore = worth - baseScore - hoursScore - lunchTimeScore - envScore;
+    const stressFactor = 0.5 + stressMultiplier * 0.5;
+    const preStressWorth = worth;
+    worth *= stressFactor;
+    const stressScore = worth - preStressWorth;
 
-    // 考慮職業發展機會（權重 10%）
     const careerGrowthMultiplier = careerGrowthScore / 5;
-    worth = worth * (0.6 + careerGrowthMultiplier * 0.4);
-    const careerScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore;
+    const careerFactor = 0.6 + careerGrowthMultiplier * 0.4;
+    const preCareerWorth = worth;
+    worth *= careerFactor;
+    const careerScore = worth - preCareerWorth;
 
-    // 考慮公司廁所清潔度（權重 5%）
     const toiletCleanlinessMultiplier = toiletCleanlinessScore / 5;
-    worth = worth * (0.8 + toiletCleanlinessMultiplier * 0.2);
-    const toiletScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore;
+    const toiletFactor = 0.8 + toiletCleanlinessMultiplier * 0.2;
+    const preToiletWorth = worth;
+    worth *= toiletFactor;
+    const toiletScore = worth - preToiletWorth;
 
-    // 考慮老細態度（權重 10%）
-    let bossAttitudeMultiplier = bossAttitudeScore / 5;
+    const bossAttitudeMultiplier = bossAttitudeScore / 5;
+    const bossFactor = bossAttitudeScore === 1 ? 0.5 : (0.6 + bossAttitudeMultiplier * 0.4);
     const preBossWorth = worth;
-    if (bossAttitudeScore === 1) {
-        worth = worth * 0.5;
-    } else {
-        worth = worth * (0.6 + bossAttitudeMultiplier * 0.4);
-    }
+    worth *= bossFactor;
     const bossScore = worth - preBossWorth;
 
-    // 考慮醫療保險（權重 5%）
     const medicalInsuranceBonus = medicalInsurance * 0.1;
-    worth = worth * (1 + medicalInsuranceBonus);
-    const medicalScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore;
+    const medicalFactor = 1 + medicalInsuranceBonus;
+    const preMedicalWorth = worth;
+    worth *= medicalFactor;
+    const medicalScore = worth - preMedicalWorth;
 
-    // 考慮有冇OT補水（權重 5%）
     const otCompensationBonus = otCompensation * 0.1;
-    worth = worth * (1 + otCompensationBonus);
-    const otScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore;
+    const otFactor = 1 + otCompensationBonus;
+    const preOtWorth = worth;
+    worth *= otFactor;
+    const otScore = worth - preOtWorth;
 
-    // 考慮年假（權重 10%）
     const leaveBonus = annualLeave / 14;
-    worth = worth * (0.7 + leaveBonus * 0.3);
-    const leaveScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore;
+    const leaveFactor = 0.7 + leaveBonus * 0.3;
+    const preLeaveWorth = worth;
+    worth *= leaveFactor;
+    const leaveScore = worth - preLeaveWorth;
 
-    // 考慮學業水準、大學類型同工作經驗嘅加成（權重 10%）
     const educationBonus = educationScore * 0.005;
     const uniTypeBonus = uniTypeScore * 0.005;
     const experienceBonus = Math.min(experience * 0.003, 0.03);
-    worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
-    const educationExperienceScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore;
+    const educationExperienceFactor = 1 + educationBonus + uniTypeBonus + experienceBonus;
+    const preEducationExperienceWorth = worth;
+    worth *= educationExperienceFactor;
+    const educationExperienceScore = worth - preEducationExperienceWorth;
 
-    // 考慮薪水同市場平均嘅比較（權重 25%）
     let experienceRange;
     if (experience <= 2) experienceRange = 0;
     else if (experience <= 5) experienceRange = 3;
@@ -221,11 +227,30 @@ function calculateWorth() {
     else experienceRange = 11;
     const marketSalary = marketSalaries[industry][educationScore][experienceRange];
     const salaryRatio = annualSalary / marketSalary;
-    worth = worth * Math.min(salaryRatio * 0.8, 1.2);
-    const marketScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore - educationExperienceScore;
+    const marketFactor = Math.min(salaryRatio * 0.8, 1.2);
+    const preMarketWorth = worth;
+    worth *= marketFactor;
+    const marketScore = worth - preMarketWorth;
 
     // 確保得分喺 1 到 100 之間
     worth = Math.max(1, Math.min(100, worth));
+
+    // 得分細分
+    const scoreBreakdown = [
+        { name: '基礎得分（每日淨薪水/總成本）', score: baseScore, weight: 25 },
+        { name: '工時影響', score: hoursScore + healthScore, weight: 10 },
+        { name: '食飯時間', score: lunchTimeScore, weight: 5 },
+        { name: '工作環境同同事環境', score: envScore, weight: 15 },
+        { name: '工作壓力', score: stressScore, weight: 10 },
+        { name: '職業發展機會', score: careerScore, weight: 10 },
+        { name: '公司廁所清潔度', score: toiletScore, weight: 5 },
+        { name: '老細態度', score: bossScore, weight: 10 },
+        { name: '醫療保險', score: medicalScore, weight: 5 },
+        { name: '有冇OT補水', score: otScore, weight: 5 },
+        { name: '年假', score: leaveScore, weight: 10 },
+        { name: '學歷同經驗', score: educationExperienceScore, weight: 10 },
+        { name: '市場薪酬比較', score: marketScore, weight: 25 }
+    ];
 
     // 評級標準
     let resultText;
@@ -242,23 +267,6 @@ function calculateWorth() {
     } else {
         resultText = '你上世拯救過宇宙 (🤩)';
     }
-
-    // 分析主要得分因素
-    const scoreBreakdown = [
-        { name: '基礎得分（每日淨薪水/總成本）', score: baseScore, weight: 25 },
-        { name: '工時影響', score: hoursScore, weight: 10 },
-        { name: '食飯時間', score: lunchTimeScore, weight: 5 },
-        { name: '工作環境同同事環境', score: envScore, weight: 15 },
-        { name: '工作壓力', score: stressScore, weight: 10 },
-        { name: '職業發展機會', score: careerScore, weight: 10 },
-        { name: '公司廁所清潔度', score: toiletScore, weight: 5 },
-        { name: '老細態度', score: bossScore, weight: 10 },
-        { name: '醫療保險', score: medicalScore, weight: 5 },
-        { name: '有冇OT補水', score: otScore, weight: 5 },
-        { name: '年假', score: leaveScore, weight: 10 },
-        { name: '學歷同經驗', score: educationExperienceScore, weight: 10 },
-        { name: '市場薪酬比較', score: marketScore, weight: 25 }
-    ];
 
     // 找出得分最高同最低嘅因素
     const sortedBreakdown = scoreBreakdown.filter(item => item.score !== 0).sort((a, b) => b.score - a.score);
