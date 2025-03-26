@@ -18,7 +18,7 @@ header h1 {
     margin: 0;
     font-size: 2.2em;
     font-weight: 700;
-    color: #66b0ff; /* 藍色標題 */
+    color: #c084fc; /* 紫色標題 */
 }
 
 header h1 i {
@@ -76,7 +76,7 @@ header p {
 
 .form-section h2 i, .result-section h2 i {
     margin-right: 0.3em;
-    color: #3498db;
+    color: #8b5cf6; /* 紫色圖標 */
 }
 
 .form-group {
@@ -92,7 +92,7 @@ label {
 
 label i {
     margin-right: 0.3em;
-    color: #3498db;
+    color: #8b5cf6; /* 紫色圖標 */
 }
 
 input[type="number"] {
@@ -107,15 +107,15 @@ input[type="number"] {
 }
 
 input[type="number"]:focus {
-    border-color: #3498db;
+    border-color: #8b5cf6; /* 紫色邊框 */
     outline: none;
 }
 
 .button-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8em; /* 增加按鈕之間嘅間距 */
-    justify-content: flex-start; /* 確保按鈕從左到右排列 */
+    gap: 0.8em;
+    justify-content: flex-start;
 }
 
 .option {
@@ -127,8 +127,8 @@ input[type="number"]:focus {
     border-radius: 5px;
     font-size: 0.9em;
     transition: all 0.3s ease;
-    white-space: nowrap; /* 防止按鈕文字換行 */
-    flex: 0 0 auto; /* 確保按鈕大小根據內容調整 */
+    white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 .option:hover {
@@ -136,10 +136,10 @@ input[type="number"]:focus {
 }
 
 .option.active {
-    background-color: #3498db;
+    background-color: #8b5cf6; /* 紫色背景 */
     color: white;
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* 增加 active 狀態嘅陰影效果 */
+    border-color: #8b5cf6;
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5); /* 紫色光暈 */
 }
 
 .form-actions {
@@ -148,7 +148,7 @@ input[type="number"]:focus {
 
 button {
     padding: 0.8em 1.5em;
-    background-color: #3498db;
+    background-color: #8b5cf6; /* 紫色按鈕 */
     color: white;
     border: none;
     border-radius: 5px;
@@ -160,12 +160,64 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #7c3aed; /* 較深紫色 */
     transform: scale(1.05);
 }
 
 button i {
     margin-right: 0.3em;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #c084fc 100%); /* 紫色漸變 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1em auto;
+    font-size: 2em;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.result-section {
+    text-align: center;
+}
+
+#result-text {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+    color: #ddd;
+}
+
+#result-details {
+    margin: 1em 0;
+    color: #bbb;
+}
+
+#result-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+#result-details th, #result-details td {
+    padding: 0.8em;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+#result-details th {
+    background-color: #333;
+    font-weight: 500;
+    color: #ddd;
+}
+
+#result-details td {
+    color: #ddd;
 }
 
 #report {
@@ -185,40 +237,48 @@ button i {
 }
 
 #report table {
-    width: 100%;
-    border-collapse: collapse;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1em;
     margin-top: 1em;
 }
 
+#report table tr {
+    display: flex;
+    flex-direction: column;
+    background-color: #333;
+    border-radius: 5px;
+    padding: 0.5em;
+}
+
 #report th, #report td {
-    padding: 0.8em;
-    border: 1px solid #555;
+    padding: 0.5em;
     text-align: left;
+    border: none;
 }
 
 #report th {
-    background-color: #333;
     font-weight: 500;
     color: #ddd;
 }
 
 #report td {
-    color: #ddd;
+    color: #bbb;
 }
 
 #report td i {
     margin-right: 0.3em;
-    color: #3498db;
+    color: #8b5cf6; /* 紫色圖標 */
 }
 
 #report a {
-    color: #66b0ff;
+    color: #c084fc; /* 紫色連結 */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 #report a:hover {
-    color: #99cfff;
+    color: #d8b4fe; /* 較淺紫色 */
     text-decoration: underline;
 }
 
@@ -238,7 +298,7 @@ body.light-mode {
 }
 
 .light-mode header h1 {
-    color: #1a73e8; /* 明亮模式下嘅藍色標題 */
+    color: #8b5cf6; /* 明亮模式下嘅紫色標題 */
 }
 
 .light-mode .card {
@@ -271,10 +331,20 @@ body.light-mode {
 }
 
 .light-mode .option.active {
-    background-color: #1a73e8;
-    border-color: #1a73e8;
+    background-color: #8b5cf6; /* 紫色背景 */
+    border-color: #8b5cf6;
     color: white;
-    box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+}
+
+.light-mode #result-details th {
+    background-color: #f1f3f5;
+    color: #333;
+}
+
+.light-mode #result-details th, .light-mode #result-details td {
+    border-color: #ddd;
+    color: #333;
 }
 
 .light-mode #report h3 {
@@ -290,25 +360,22 @@ body.light-mode {
 }
 
 .light-mode #report th {
-    background-color: #f1f3f5;
     color: #333;
 }
 
-.light-mode #report th, .light-mode #report td {
-    border-color: #ddd;
-    color: #333;
+.light-mode #report td {
+    color: #666;
 }
 
 .light-mode #report a {
-    color: #1a73e8;
+    color: #8b5cf6;
 }
 
 .light-mode #report a:hover {
-    color: #1557b0;
+    color: #7c3aed;
     text-decoration: underline;
 }
 
-/* 響應式設計：喺小屏幕上調整佈局 */
 @media (max-width: 600px) {
     header h1 {
         font-size: 1.8em;
@@ -341,13 +408,13 @@ body.light-mode {
     }
 
     .button-group {
-        gap: 0.5em; /* 喺小屏幕上減少間距 */
+        gap: 0.5em;
     }
 
     .option {
-        padding: 0.5em 1em; /* 喺小屏幕上減少按鈕嘅內邊距 */
-        font-size: 0.85em; /* 喺小屏幕上減少字體大小 */
-        min-width: 100px; /* 確保按鈕有最小寬度，避免過窄 */
+        padding: 0.5em 1em;
+        font-size: 0.85em;
+        min-width: 100px;
     }
 
     button {
@@ -355,21 +422,30 @@ body.light-mode {
         font-size: 0.9em;
     }
 
-    #report h3 {
+    .score-circle {
+        width: 120px;
+        height: 120px;
+        font-size: 1.8em;
+    }
+
+    #result-text {
         font-size: 1.3em;
     }
 
-    #report p, #report ul li {
+    #result-details th, #result-details td {
+        padding: 0.6em;
         font-size: 0.9em;
     }
 
-    #report table th, #report table td {
-        padding: 0.6em;
+    #report table {
+        grid-template-columns: 1fr;
+    }
+
+    #report th, #report td {
         font-size: 0.9em;
     }
 }
 
-/* 喺更小嘅屏幕上進一步調整 */
 @media (max-width: 400px) {
     header h1 {
         font-size: 1.5em;
@@ -407,23 +483,24 @@ body.light-mode {
         font-size: 0.85em;
     }
 
-    #report h3 {
+    .score-circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.5em;
+    }
+
+    #result-text {
         font-size: 1.2em;
     }
 
-    #report p, #report ul li {
-        font-size: 0.85em;
-    }
-
-    #report table th, #report table td {
+    #result-details th, #result-details td {
         padding: 0.5em;
         font-size: 0.85em;
     }
 }
 
-/* 確保表格喺小屏幕上可以橫向滾動 */
 @media (max-width: 600px) {
-    #report table {
+    #result-details table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;

@@ -40,11 +40,11 @@ const marketSalaries = {
 
 // 模擬 API 獲取香港平均工時、壓力同其他數據（假設 2024 年數據）
 const hkStats = {
-    avgHoursPerDay: 8.7, // 2024 年香港統計處數據
-    avgStressLevel: 3.2, // 2024 年香港政府健康署數據
-    avgAnnualLeave: 10, // 2024 年香港勞工處數據
-    avgCommuteTime: 0.8, // 2024 年香港運輸署數據（單程平均通勤時間）
-    avgTransportCost: 30 // 2024 年香港運輸署數據（每日平均車費）
+    avgHoursPerDay: 8.7,
+    avgStressLevel: 3.2,
+    avgAnnualLeave: 10,
+    avgCommuteTime: 0.8,
+    avgTransportCost: 30
 };
 
 // 用戶計數器
@@ -118,7 +118,9 @@ function calculateWorth() {
 
     // 輸入驗證
     if (!monthlySalary || monthlySalary <= 0) {
-        document.getElementById('result').innerText = '請輸入有效嘅稅前月薪！';
+        document.getElementById('score-circle').innerText = '';
+        document.getElementById('result-text').innerText = '請輸入有效嘅稅前月薪！';
+        document.getElementById('result-details').innerHTML = '';
         return;
     }
 
@@ -142,61 +144,74 @@ function calculateWorth() {
 
     // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 25%）
     let worth = (netSalaryPerDay / totalCostPerDay) * 0.5;
+    const baseScore = worth;
 
     // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 10%）
     const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
-    worth = worth * (1 - hoursPenalty * 0.3); // 降低罰分比例至 0.3，使影響更平滑
+    worth = worth * (1 - hoursPenalty * 0.3);
+    const hoursScore = worth - baseScore;
 
     // 考慮健康影響（每日超過 10 小時減分）
     if (hoursPerDay > 10) {
-        worth = worth * 0.9; // 輕微調整罰分
+        worth = worth * 0.9;
     }
 
     // 考慮食飯時間（少於 0.5 小時減分，權重 5%）
     const lunchTimePenalty = lunchTime < 0.5 ? (0.5 - lunchTime) / 0.5 : 0;
     worth = worth * (1 - lunchTimePenalty * 0.1);
+    const lunchTimeScore = worth - baseScore - hoursScore;
 
     // 考慮工作環境同同事環境（權重 15%）
     const envMultiplier = (workEnvScore * colleagueEnvScore) / 25;
     worth = worth * (0.6 + envMultiplier * 0.4);
+    const envScore = worth - baseScore - hoursScore - lunchTimeScore;
 
     // 考慮工作壓力（權重 10%）
     const stressMultiplier = (6 - workStressScore) / 5;
     worth = worth * (0.5 + stressMultiplier * 0.5);
+    const stressScore = worth - baseScore - hoursScore - lunchTimeScore - envScore;
 
     // 考慮職業發展機會（權重 10%）
     const careerGrowthMultiplier = careerGrowthScore / 5;
     worth = worth * (0.6 + careerGrowthMultiplier * 0.4);
+    const careerScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore;
 
     // 考慮公司廁所清潔度（權重 5%）
     const toiletCleanlinessMultiplier = toiletCleanlinessScore / 5;
     worth = worth * (0.8 + toiletCleanlinessMultiplier * 0.2);
+    const toiletScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore;
 
     // 考慮老細態度（權重 10%）
     let bossAttitudeMultiplier = bossAttitudeScore / 5;
+    const preBossWorth = worth;
     if (bossAttitudeScore === 1) {
-        worth = worth * 0.5; // 垃圾老細大扣分
+        worth = worth * 0.5;
     } else {
         worth = worth * (0.6 + bossAttitudeMultiplier * 0.4);
     }
+    const bossScore = worth - preBossWorth;
 
     // 考慮醫療保險（權重 5%）
     const medicalInsuranceBonus = medicalInsurance * 0.1;
     worth = worth * (1 + medicalInsuranceBonus);
+    const medicalScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore;
 
     // 考慮有冇OT補水（權重 5%）
     const otCompensationBonus = otCompensation * 0.1;
     worth = worth * (1 + otCompensationBonus);
+    const otScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore;
 
     // 考慮年假（權重 10%）
     const leaveBonus = annualLeave / 14;
     worth = worth * (0.7 + leaveBonus * 0.3);
+    const leaveScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore;
 
     // 考慮學業水準、大學類型同工作經驗嘅加成（權重 10%）
     const educationBonus = educationScore * 0.005;
     const uniTypeBonus = uniTypeScore * 0.005;
     const experienceBonus = Math.min(experience * 0.003, 0.03);
     worth = worth * (1 + educationBonus + uniTypeBonus + experienceBonus);
+    const educationExperienceScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore;
 
     // 考慮薪水同市場平均嘅比較（權重 25%）
     let experienceRange;
@@ -207,11 +222,12 @@ function calculateWorth() {
     const marketSalary = marketSalaries[industry][educationScore][experienceRange];
     const salaryRatio = annualSalary / marketSalary;
     worth = worth * Math.min(salaryRatio * 0.8, 1.2);
+    const marketScore = worth - baseScore - hoursScore - lunchTimeScore - envScore - stressScore - careerScore - toiletScore - bossScore - medicalScore - otScore - leaveScore - educationExperienceScore;
 
     // 確保得分喺 1 到 100 之間
     worth = Math.max(1, Math.min(100, worth));
 
-    // 評級標準（調整為更合理嘅分布）
+    // 評級標準
     let resultText;
     if (worth <= 20) {
         resultText = '社畜生活';
@@ -227,7 +243,67 @@ function calculateWorth() {
         resultText = '你上世拯救過宇宙 (🤩)';
     }
 
-    document.getElementById('result').innerText = `你嘅工作 CP 值：${worth.toFixed(1)} - ${resultText}`;
+    // 分析主要得分因素
+    const scoreBreakdown = [
+        { name: '基礎得分（每日淨薪水/總成本）', score: baseScore, weight: 25 },
+        { name: '工時影響', score: hoursScore, weight: 10 },
+        { name: '食飯時間', score: lunchTimeScore, weight: 5 },
+        { name: '工作環境同同事環境', score: envScore, weight: 15 },
+        { name: '工作壓力', score: stressScore, weight: 10 },
+        { name: '職業發展機會', score: careerScore, weight: 10 },
+        { name: '公司廁所清潔度', score: toiletScore, weight: 5 },
+        { name: '老細態度', score: bossScore, weight: 10 },
+        { name: '醫療保險', score: medicalScore, weight: 5 },
+        { name: '有冇OT補水', score: otScore, weight: 5 },
+        { name: '年假', score: leaveScore, weight: 10 },
+        { name: '學歷同經驗', score: educationExperienceScore, weight: 10 },
+        { name: '市場薪酬比較', score: marketScore, weight: 25 }
+    ];
+
+    // 找出得分最高同最低嘅因素
+    const sortedBreakdown = scoreBreakdown.filter(item => item.score !== 0).sort((a, b) => b.score - a.score);
+    const topFactor = sortedBreakdown[0];
+    const bottomFactor = sortedBreakdown[sortedBreakdown.length - 1];
+
+    // 生成建議
+    let advice = '';
+    if (hoursPerDay > 10) {
+        advice += '你嘅每日工作時數超過 10 小時，建議同公司商討減少工時，或者尋找更平衡嘅工作。';
+    }
+    if (workStressScore >= 4) {
+        advice += '你嘅工作壓力偏高，建議尋找減壓方法，例如運動、冥想，或者同上司討論工作負擔。';
+    }
+    if (annualLeave < 7) {
+        advice += '你嘅年假少於法定標準，建議同公司爭取更多年假，或者考慮其他有更好福利嘅工作。';
+    }
+    if (bossAttitudeScore <= 2) {
+        advice += '你嘅老細態度唔理想，建議同上司溝通改善關係，或者考慮轉工。';
+    }
+    if (!advice) {
+        advice = '你嘅工作整體唔錯，繼續保持！';
+    }
+
+    // 顯示結果
+    document.getElementById('score-circle').innerText = worth.toFixed(1);
+    document.getElementById('result-text').innerText = resultText;
+    document.getElementById('result-details').innerHTML = `
+        <h4>得分細分</h4>
+        <table>
+            <tr><th>因素</th><th>得分影響</th><th>權重</th></tr>
+            ${scoreBreakdown.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.score.toFixed(1)}</td>
+                    <td>${item.weight}%</td>
+                </tr>
+            `).join('')}
+        </table>
+        <h4>分析</h4>
+        <p>你嘅得分主要受惠於：<strong>${topFactor.name}</strong>（+${topFactor.score.toFixed(1)} 分）。</p>
+        <p>你嘅得分主要被拖累於：<strong>${bottomFactor.name}</strong>（${bottomFactor.score.toFixed(1)} 分）。</p>
+        <h4>建議</h4>
+        <p>${advice}</p>
+    `;
     document.getElementById('share-section').style.display = 'block';
 
     // 生成報告
@@ -255,7 +331,8 @@ function calculateWorth() {
         experience,
         uniTypeScore,
         worth,
-        resultText
+        resultText,
+        marketSalary
     };
     generateReport(reportData);
 
@@ -287,8 +364,7 @@ function generateReport(data) {
         educationScore,
         experience,
         uniTypeScore,
-        worth,
-        resultText
+        marketSalary
     } = data;
 
     // 文字映射
@@ -304,14 +380,7 @@ function generateReport(data) {
     const educationText = { 1: "大專", 2: "大學生", 3: "碩士", 4: "博士" };
     const uniTypeText = { 1: "大專", 2: "私大（樹仁/恒大）", 3: "八大", 4: "海歸（外國升學）" };
 
-    // 計算市場平均薪酬
-    let experienceRange;
-    if (experience <= 2) experienceRange = 0;
-    else if (experience <= 5) experienceRange = 3;
-    else if (experience <= 10) experienceRange = 6;
-    else experienceRange = 11;
-
-    const marketSalary = marketSalaries[industry][educationScore][experienceRange];
+    // 計算市場平均薪酬比較
     const salaryComparison = annualSalary - marketSalary;
     const comparisonText = salaryComparison > 0 
         ? `高於市場平均 ${Math.abs(salaryComparison).toLocaleString()} HKD`
@@ -423,7 +492,9 @@ function resetForm() {
         const defaultButton = group.querySelector('.option.active');
         if (defaultButton) defaultButton.classList.add('active');
     });
-    document.getElementById('result').innerText = '';
+    document.getElementById('score-circle').innerText = '';
+    document.getElementById('result-text').innerText = '';
+    document.getElementById('result-details').innerHTML = '';
     document.getElementById('report').innerHTML = '';
     document.getElementById('share-section').style.display = 'none';
     localStorage.removeItem('reportData');
