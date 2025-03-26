@@ -24,6 +24,12 @@ const marketSalaries = {
         3: { 0: 324000, 3: 432000, 6: 552000, 11: 672000 },
         4: { 0: 432000, 3: 552000, 6: 672000, 11: 792000 }
     },
+    government: {
+        1: { 0: 240000, 3: 288000, 6: 360000, 11: 450000 },
+        2: { 0: 288000, 3: 360000, 6: 480000, 11: 600000 },
+        3: { 0: 360000, 3: 480000, 6: 600000, 11: 720000 },
+        4: { 0: 480000, 3: 600000, 6: 720000, 11: 840000 }
+    },
     others: {
         1: { 0: 192000, 3: 228000, 6: 276000, 11: 324000 },
         2: { 0: 228000, 3: 276000, 6: 348000, 11: 432000 },
@@ -73,6 +79,7 @@ setupButtonGroup('careerGrowth');
 setupButtonGroup('toiletCleanliness');
 setupButtonGroup('bossAttitude');
 setupButtonGroup('medicalInsurance');
+setupButtonGroup('otCompensation');
 setupButtonGroup('industry');
 setupButtonGroup('education');
 setupButtonGroup('uniType');
@@ -103,6 +110,7 @@ function calculateWorth() {
     const toiletCleanlinessScore = getButtonGroupValue('toiletCleanliness');
     const bossAttitudeScore = getButtonGroupValue('bossAttitude');
     const medicalInsurance = getButtonGroupValue('medicalInsurance');
+    const otCompensation = getButtonGroupValue('otCompensation');
     const industry = getButtonGroupValue('industry');
     const educationScore = getButtonGroupValue('education');
     const experience = parseFloat(document.getElementById('experience').value);
@@ -135,13 +143,13 @@ function calculateWorth() {
     // 計算基礎得分（以每日淨薪水除以總成本為基礎，權重 25%）
     let worth = (netSalaryPerDay / totalCostPerDay) * 0.5;
 
-    // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 15%）
+    // 考慮工時影響（每日 8.7 小時係標準，超過會減分，權重 10%）
     const hoursPenalty = hoursPerDay > hkStats.avgHoursPerDay ? (hoursPerDay - hkStats.avgHoursPerDay) / hkStats.avgHoursPerDay : 0;
-    worth = worth * (1 - hoursPenalty * 0.5);
+    worth = worth * (1 - hoursPenalty * 0.3); // 降低罰分比例至 0.3，使影響更平滑
 
     // 考慮健康影響（每日超過 10 小時減分）
     if (hoursPerDay > 10) {
-        worth = worth * 0.85;
+        worth = worth * 0.9; // 輕微調整罰分
     }
 
     // 考慮食飯時間（少於 0.5 小時減分，權重 5%）
@@ -175,6 +183,10 @@ function calculateWorth() {
     // 考慮醫療保險（權重 5%）
     const medicalInsuranceBonus = medicalInsurance * 0.1;
     worth = worth * (1 + medicalInsuranceBonus);
+
+    // 考慮有冇OT補水（權重 5%）
+    const otCompensationBonus = otCompensation * 0.1;
+    worth = worth * (1 + otCompensationBonus);
 
     // 考慮年假（權重 10%）
     const leaveBonus = annualLeave / 14;
@@ -237,6 +249,7 @@ function calculateWorth() {
         toiletCleanlinessScore,
         bossAttitudeScore,
         medicalInsurance,
+        otCompensation,
         industry,
         educationScore,
         experience,
@@ -269,6 +282,7 @@ function generateReport(data) {
         toiletCleanlinessScore,
         bossAttitudeScore,
         medicalInsurance,
+        otCompensation,
         industry,
         educationScore,
         experience,
@@ -285,7 +299,8 @@ function generateReport(data) {
     const toiletCleanlinessText = { 1: "好污糟", 2: "一般污糟", 3: "麻麻地", 4: "乾淨", 5: "超級乾淨" };
     const bossAttitudeText = { 1: "垃圾老細", 2: "好嚴格", 3: "麻麻地", 4: "Okay啦", 5: "非常好" };
     const medicalInsuranceText = { 0: "無", 1: "有" };
-    const industryText = { finance: "金融", education: "教育", retail: "零售", it: "資訊科技", others: "其他" };
+    const otCompensationText = { 0: "無", 1: "有" };
+    const industryText = { finance: "金融", education: "教育", retail: "零售", it: "資訊科技", government: "政府", others: "其他" };
     const educationText = { 1: "大專", 2: "大學生", 3: "碩士", 4: "博士" };
     const uniTypeText = { 1: "大專", 2: "私大（樹仁/恒大）", 3: "八大", 4: "海歸（外國升學）" };
 
@@ -338,108 +353,78 @@ function generateReport(data) {
         ? `低於香港平均 (${hkStats.avgCommuteTime} 小時) ${((hkStats.avgCommuteTime - commute) / hkStats.avgCommuteTime * 100).toFixed(1)}%`
         : "等於香港平均";
 
-    const transportCostComparison = transportCost > hkStats.avgTransportCost 
-        ? `高於香港平均 (${hkStats.avgTransportCost} HKD) ${((transportCost - hkStats.avgTransportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
-        : transportCost < hkStats.avgTransportCost 
-        ? `低於香港平均 (${hkStats.avgTransportCost} HKD) ${((hkStats.avgTransportCost - transportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
+    const transportCostComparison = avgTransportCost > hkStats.avgTransportCost 
+        ? `高於香港平均 (${hkStats.avgTransportCost} HKD) ${((avgTransportCost - hkStats.avgTransportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
+        : avgTransportCost < hkStats.avgTransportCost 
+        ? `低於香港平均 (${hkStats.avgTransportCost} HKD) ${((hkStats.avgTransportCost - avgTransportCost) / hkStats.avgTransportCost * 100).toFixed(1)}%`
         : "等於香港平均";
 
-    // 生成報告內容
-    const report = `
-        <h3><i class="fas fa-list"></i> 你嘅選擇</h3>
+    // 生成報告 HTML
+    let reportHTML = `
+        <h3><i class="fas fa-user"></i> 我嘅選擇</h3>
         <table>
-            <tr><th>項目</th><th>資料</th></tr>
-            <tr><td><i class="fas fa-money-bill-wave"></i> 稅前月薪</td><td>${monthlySalary.toLocaleString()} HKD</td></tr>
-            <tr><td><i class="fas fa-money-bill-wave"></i> 稅前年薪</td><td>${annualSalary.toLocaleString()} HKD</td></tr>
-            <tr><td><i class="fas fa-calendar-week"></i> 每週工作天數</td><td>${workDaysPerWeek} 天</td></tr>
-            <tr><td><i class="fas fa-home"></i> 每週在家工作天數</td><td>${wfhDaysPerWeek} 天</td></tr>
-            <tr><td><i class="fas fa-clock"></i> 每日工作時數</td><td>${hoursPerDay} 小時</td></tr>
-            <tr><td><i class="fas fa-utensils"></i> 食飯時間</td><td>${lunchTime} 小時</td></tr>
-            <tr><td><i class="fas fa-car"></i> 單程通勤時間</td><td>${commute} 小時</td></tr>
-            <tr><td><i class="fas fa-ticket-alt"></i> 每日車費</td><td>${transportCost} HKD</td></tr>
-            <tr><td><i class="fas fa-umbrella-beach"></i> 年假日數</td><td>${annualLeave} 天</td></tr>
-            <tr><td><i class="fas fa-building"></i> 工作環境</td><td>${workEnvText[workEnvScore]}</td></tr>
-            <tr><td><i class="fas fa-users"></i> 同事環境</td><td>${colleagueEnvText[colleagueEnvScore]}</td></tr>
-            <tr><td><i class="fas fa-exclamation-circle"></i> 工作壓力</td><td>${workStressText[workStressScore]}</td></tr>
-            <tr><td><i class="fas fa-chart-line"></i> 職業發展機會</td><td>${careerGrowthText[careerGrowthScore]}</td></tr>
-            <tr><td><i class="fas fa-toilet"></i> 公司廁所清潔度</td><td>${toiletCleanlinessText[toiletCleanlinessScore]}</td></tr>
-            <tr><td><i class="fas fa-user-tie"></i> 老細態度</td><td>${bossAttitudeText[bossAttitudeScore]}</td></tr>
-            <tr><td><i class="fas fa-heartbeat"></i> 有無醫療保險</td><td>${medicalInsuranceText[medicalInsurance]}</td></tr>
-            <tr><td><i class="fas fa-briefcase"></i> 行業</td><td>${industryText[industry]}</td></tr>
-            <tr><td><i class="fas fa-graduation-cap"></i> 學業水準</td><td>${educationText[educationScore]}</td></tr>
-            <tr><td><i class="fas fa-briefcase"></i> 工作經驗</td><td>${experience} 年</td></tr>
-            <tr><td><i class="fas fa-university"></i> 大學類型</td><td>${uniTypeText[uniTypeScore]}</td></tr>
+            <tr><th><i class="fas fa-money-bill-wave"></i> 稅前月薪（HKD）</th><td>${monthlySalary.toLocaleString()}</td></tr>
+            <tr><th><i class="fas fa-calendar-week"></i> 每週工作天數</th><td>${workDaysPerWeek}</td></tr>
+            <tr><th><i class="fas fa-home"></i> 每週在家工作天數</th><td>${wfhDaysPerWeek}</td></tr>
+            <tr><th><i class="fas fa-clock"></i> 每日工作時數（唔計食飯時間）</th><td>${hoursPerDay}</td></tr>
+            <tr><th><i class="fas fa-utensils"></i> 食飯時間（小時）</th><td>${lunchTime}</td></tr>
+            <tr><th><i class="fas fa-car"></i> 單程通勤時間（小時）</th><td>${commute}</td></tr>
+            <tr><th><i class="fas fa-ticket-alt"></i> 每日車費（HKD）</th><td>${transportCost}</td></tr>
+            <tr><th><i class="fas fa-umbrella-beach"></i> 年假日數（天）</th><td>${annualLeave}</td></tr>
+            <tr><th><i class="fas fa-building"></i> 工作環境</th><td>${workEnvText[workEnvScore]}</td></tr>
+            <tr><th><i class="fas fa-users"></i> 同事環境</th><td>${colleagueEnvText[colleagueEnvScore]}</td></tr>
+            <tr><th><i class="fas fa-exclamation-circle"></i> 工作壓力</th><td>${workStressText[workStressScore]}</td></tr>
+            <tr><th><i class="fas fa-chart-line"></i> 職業發展機會</th><td>${careerGrowthText[careerGrowthScore]}</td></tr>
+            <tr><th><i class="fas fa-toilet"></i> 公司廁所清潔度</th><td>${toiletCleanlinessText[toiletCleanlinessScore]}</td></tr>
+            <tr><th><i class="fas fa-user-tie"></i> 老細態度</th><td>${bossAttitudeText[bossAttitudeScore]}</td></tr>
+            <tr><th><i class="fas fa-heartbeat"></i> 有無醫療保險</th><td>${medicalInsuranceText[medicalInsurance]}</td></tr>
+            <tr><th><i class="fas fa-clock"></i> 有冇OT補水</th><td>${otCompensationText[otCompensation]}</td></tr>
+            <tr><th><i class="fas fa-briefcase"></i> 行業</th><td>${industryText[industry]}</td></tr>
+            <tr><th><i class="fas fa-graduation-cap"></i> 學業水準</th><td>${educationText[educationScore]}</td></tr>
+            <tr><th><i class="fas fa-briefcase"></i> 工作經驗（年）</th><td>${experience}</td></tr>
+            <tr><th><i class="fas fa-university"></i> 大學類型</th><td>${uniTypeText[uniTypeScore]}</td></tr>
         </table>
-
-        <h3><i class="fas fa-calculator"></i> 計算細節</h3>
+        <h3><i class="fas fa-city"></i> 香港平均數據比較</h3>
         <table>
-            <tr><th>項目</th><th>資料</th></tr>
-            <tr><td><i class="fas fa-calendar-day"></i> 每年工作日數</td><td>${workingDaysPerYear} 天（${workDaysPerWeek} 天/週 × 52 週 - 11 天公眾假期 - ${annualLeave} 天年假）</td></tr>
-            <tr><td><i class="fas fa-money-bill-wave"></i> 每日淨薪水</td><td>${netSalaryPerDay.toFixed(2)} HKD（${annualSalary.toLocaleString()} HKD ÷ ${workingDaysPerYear} 天）</td></tr>
-            <tr><td><i class="fas fa-clock"></i> 每日時間成本</td><td>${timeCostPerDay.toFixed(2)} 小時（${hoursPerDay} 小時工作 + ${lunchTime} 小時食飯 + 2 × ${avgCommuteTime.toFixed(2)} 小時通勤）</td></tr>
-            <tr><td><i class="fas fa-coins"></i> 每日總成本</td><td>${totalCostPerDay.toFixed(2)}（${timeCostPerDay.toFixed(2)} 小時 + ${avgTransportCost.toFixed(2)} HKD ÷ 60）</td></tr>
+            <tr><th><i class="fas fa-money-bill-wave"></i> 年薪同市場平均比較</th><td>${comparisonText}</td></tr>
+            <tr><th><i class="fas fa-clock"></i> 每日工作時數</th><td>${hoursComparison}</td></tr>
+            <tr><th><i class="fas fa-umbrella-beach"></i> 年假日數</th><td>${leaveComparison}</td></tr>
+            <tr><th><i class="fas fa-exclamation-circle"></i> 工作壓力</th><td>${stressComparison}</td></tr>
+            <tr><th><i class="fas fa-car"></i> 單程通勤時間</th><td>${commuteComparison}</td></tr>
+            <tr><th><i class="fas fa-ticket-alt"></i> 每日車費</th><td>${transportCostComparison}</td></tr>
         </table>
-
-        <h3><i class="fas fa-chart-bar"></i> 工作分析</h3>
-        <p>你嘅工作 CP 值：${worth.toFixed(1)} - ${resultText}</p>
-
-        <h3><i class="fas fa-balance-scale"></i> 市場比較</h3>
-        <p>根據你嘅學業水準 (${educationText[educationScore]})、工作經驗 (${experience} 年) 同行業 (${industryText[industry]})，香港市場平均年薪為 ${marketSalary.toLocaleString()} HKD（數據來源：香港統計處 2024 年收入及工時統計調查報告）。</p>
-        <p>你嘅年薪 (${annualSalary.toLocaleString()} HKD) ${comparisonText}。</p>
-
-        <h3><i class="fas fa-globe"></i> 香港平均數據比較</h3>
-        <table>
-            <tr><th>項目</th><th>比較</th></tr>
-            <tr><td><i class="fas fa-clock"></i> 每日工作時數</td><td>${hoursComparison}（香港平均數據：${hkStats.avgHoursPerDay} 小時，來源：香港統計處 2024 年報告）</td></tr>
-            <tr><td><i class="fas fa-umbrella-beach"></i> 年假日數</td><td>${leaveComparison}（香港平均數據：${hkStats.avgAnnualLeave} 天，來源：香港勞工處 2024 年報告）</td></tr>
-            <tr><td><i class="fas fa-exclamation-circle"></i> 工作壓力</td><td>${stressComparison}（香港平均數據：${hkStats.avgStressLevel}/5，來源：香港政府健康署 2024 年報告）</td></tr>
-            <tr><td><i class="fas fa-car"></i> 單程通勤時間</td><td>${commuteComparison}（香港平均數據：${hkStats.avgCommuteTime} 小時，來源：香港運輸署 2024 年報告）</td></tr>
-            <tr><td><i class="fas fa-ticket-alt"></i> 每日車費</td><td>${transportCostComparison}（香港平均數據：${hkStats.avgTransportCost} HKD，來源：香港運輸署 2024 年報告）</td></tr>
-        </table>
-
-        <h3><i class="fas fa-info-circle"></i> 數據來源</h3>
-        <ul>
-            <li><a href="https://www.censtatd.gov.hk/en/scode210.html" target="_blank">香港統計處 - 2024 年收入及工時統計調查報告</a>：提供行業薪酬同工時數據（平均每日工時 8.7 小時）。</li>
-            <li><a href="https://www.labour.gov.hk/tc/public/pdf/AnnualLeave.pdf" target="_blank">香港勞工處 - 年假標準（2024 年更新）</a>：提供年假標準（平均 10 天，視乎工齡 7-14 天）。</li>
-            <li><a href="https://www.chp.gov.hk/tc/healthtopics/content/24/665.html" target="_blank">香港政府健康署 - 工作壓力與健康（2024 年更新）</a>：提供工作壓力數據（平均壓力水平為 3.2/5）。</li>
-            <li><a href="https://www.td.gov.hk/tc/transport_in_hong_kong/transport_figures/index.html" target="_blank">香港運輸署 - 2024 年交通數據</a>：提供通勤時間同車費數據（平均單程通勤時間 0.8 小時，每日車費 30 HKD）。</li>
-            <li><a href="https://www.glassdoor.com/" target="_blank">Glassdoor - 工作評估框架</a>：提供工作評估嘅權重參考。</li>
-            <li><a href="https://www.who.int/news/item/17-05-2021-long-working-hours-increasing-deaths-from-heart-disease-and-stroke-who-ilo" target="_blank">世界衛生組織 - 長工時影響</a>：提供長工時對健康嘅影響數據。</li>
-            <li><a href="https://www.policyaddress.gov.hk/2024/en/" target="_blank">香港特區政府 - 2024 年施政報告</a>：提供香港勞動市場同工作環境嘅最新政策數據。</li>
-        </ul>
     `;
 
-    document.getElementById('report').innerHTML = report;
+    document.getElementById('report').innerHTML = reportHTML;
 }
 
 function shareResult() {
     const reportData = JSON.parse(localStorage.getItem('reportData'));
-    const shareUrl = `share.html?worth=${reportData.worth}&result=${encodeURIComponent(reportData.resultText)}`;
-    window.open(shareUrl, '_blank');
+    if (!reportData) {
+        alert('請先評測你嘅工作！');
+        return;
+    }
+
+    const { worth, resultText } = reportData;
+    const shareUrl = `share.html?worth=${worth.toFixed(1)}&result=${encodeURIComponent(resultText)}`;
+    window.location.href = shareUrl;
 }
 
 function resetForm() {
-    document.getElementById('monthlySalary').value = '';
-    document.getElementById('workDays').value = 5;
-    document.getElementById('wfhDays').value = 0;
-    document.getElementById('hours').value = 8;
-    document.getElementById('lunchTime').value = 1;
-    document.getElementById('commute').value = 0.5;
-    document.getElementById('transportCost').value = 0;
-    document.getElementById('annualLeave').value = 7;
-    document.getElementById('experience').value = 0;
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.value = input.defaultValue;
+    });
+    document.querySelectorAll('.button-group').forEach(group => {
+        const buttons = group.querySelectorAll('.option');
+        buttons.forEach(button => {
+            if (button.classList.contains('active')) return;
+            button.classList.remove('active');
+        });
+        const defaultButton = group.querySelector('.option.active');
+        if (defaultButton) defaultButton.classList.add('active');
+    });
     document.getElementById('result').innerText = '';
     document.getElementById('report').innerHTML = '';
     document.getElementById('share-section').style.display = 'none';
-
-    ['workEnv', 'colleagueEnv', 'workStress', 'careerGrowth', 'toiletCleanliness', 'bossAttitude', 'medicalInsurance', 'industry', 'education', 'uniType'].forEach(groupId => {
-        const group = document.getElementById(groupId);
-        const buttons = group.querySelectorAll('.option');
-        buttons.forEach(button => {
-            button.classList.remove('active');
-            if (button.getAttribute('data-value') === (groupId === 'workEnv' ? '5' : groupId === 'colleagueEnv' ? '3' : groupId === 'workStress' ? '3' : groupId === 'careerGrowth' ? '3' : groupId === 'toiletCleanliness' ? '3' : groupId === 'bossAttitude' ? '3' : groupId === 'medicalInsurance' ? '0' : groupId === 'industry' ? 'others' : '1')) {
-                button.classList.add('active');
-            }
-        });
-    });
+    localStorage.removeItem('reportData');
 }
